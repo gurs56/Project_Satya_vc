@@ -5,24 +5,26 @@ public class HealthTester : MonoBehaviour {
     [SerializeField]
     Health health;
 
-    float difference = 1.5f;
+    float difference = 15f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() {
-
-    }
+    float oldhealth = 0;
 
     // Update is called once per frame
     void Update() {
-        doInput(KeyCode.UpArrow, difference);
-        doInput(KeyCode.DownArrow, -difference);
+        oldhealth = health.CurrentHealth;
+        doInput(KeyCode.UpArrow, difference, false);
+        doInput(KeyCode.DownArrow, -difference, false);
 
+        doInput(KeyCode.RightArrow, difference, true);
+        doInput(KeyCode.LeftArrow, -difference, true);
     }
-    void doInput(KeyCode keyCode, float dif) {
+    void doInput(KeyCode keyCode, float dif, bool maxhealth) {
         if (Input.GetKeyDown(keyCode)) {
-            var oldh = health.CurrentHealth;
-            health.CurrentHealth += dif;
-            printhealth(oldh, dif);
+            if (maxhealth) {
+                health.MaxHealth += dif;
+            } else { 
+                health.CurrentHealth += dif;
+            }
         }
     }
 
@@ -43,17 +45,20 @@ public class HealthTester : MonoBehaviour {
         print("died");
     }
     public void healthChanged(float value) {
+        print("health changed");
         printhealth();
     }
     public void healed(float value) {
-        printhealth(value, calcoldhealth(value));
+        print("healed");
+        printhealth(oldhealth, value);
     }
     public void damaged(float value) {
-        printhealth(value, calcoldhealth(value));
+        print("damaged");
+        printhealth(oldhealth, value);
     }
 
-    public float calcoldhealth(float dif) {
-        return health.CurrentHealth - dif;
+    public void maxHealthChanged(float value) {
+        print("maxhealth: " + value);
     }
 }
 

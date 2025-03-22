@@ -9,6 +9,7 @@ public class Health : MonoBehaviour {
     [SerializeField]
     private float currentHealth = 1f;
 
+    [SerializeField]
     private bool isDead = false;
 
     /// <summary>
@@ -62,7 +63,7 @@ public class Health : MonoBehaviour {
     public UnityEvent<float> onMaxHealthUpdated;
 
     public float CurrentHealth {
-        get => currentHealth;
+        get => this.currentHealth;
 
         set {
             if (!isDead) {
@@ -73,8 +74,7 @@ public class Health : MonoBehaviour {
                 if (currentHealth <= 0f) {
                     currentHealth = 0f;
 
-                    isDead = true;
-                    onDeath.Invoke();
+                    IsDead = true;
                 }
                 // Overheal
                 else if (currentHealth > MaxHealth) {
@@ -83,15 +83,15 @@ public class Health : MonoBehaviour {
 
                 // If still not dead, send health changed health events
                 if (!isDead) {
-                    float healthDifference = oldCurrentHealth - currentHealth;
+                    float healthDifference = currentHealth - oldCurrentHealth;
 
                     onCurrentHealthUpdated.Invoke(currentHealth);
 
                     if (healthDifference != 0) {
                         if (healthDifference > 0) {
-                            onHealed.Invoke(healthDifference);
-                        } else {
                             onDamaged.Invoke(healthDifference);
+                        } else {
+                            onHealed.Invoke(healthDifference);
                         }
                     }
                 }
@@ -105,12 +105,28 @@ public class Health : MonoBehaviour {
 
         set {
             this.maxHealth = value;
+            if (maxHealth < 0) {
+                maxHealth = 0;
+            }
             if (currentHealth > maxHealth) {
                 // don't use property, as to not invoke onDamaged event
                 currentHealth = maxHealth;
             }
 
             onMaxHealthUpdated.Invoke(maxHealth);
+        }
+    }
+
+    public bool IsDead { 
+        get => isDead;
+
+        set { 
+            isDead = value;
+            if (isDead) {
+                currentHealth = 0;
+
+                onDeath.Invoke();
+            }
         }
     }
 
