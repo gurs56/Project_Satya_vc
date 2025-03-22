@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Health : MonoBehaviour
-{
+public class Health : MonoBehaviour {
+    [SerializeField]
     private float maxHealth = 1f;
 
+    // TODO: Replace with serialized range
+    [SerializeField]
     private float currentHealth = 1f;
 
     private bool isDead = false;
@@ -12,7 +14,7 @@ public class Health : MonoBehaviour
     /// <summary>
     /// Notifies that <c>CurrentHealth</c> has been fully depleted.
     /// </summary>
-    private UnityEvent onDeath;
+    public UnityEvent onDeath;
 
     /// <summary>
     /// <para>Notifies that the <c>CurrentHealth</c> was updated.</para><br />
@@ -22,7 +24,7 @@ public class Health : MonoBehaviour
     /// 
     /// Returns new value of <c>CurrentHealth</c>
     /// </summary>
-    private UnityEvent<float> onCurrentHealthUpdated;
+    public UnityEvent<float> onCurrentHealthUpdated;
 
     /// <summary>
     /// <para>Notifies that the <c>CurrentHealth</c> has decreased.</para><br />
@@ -36,7 +38,7 @@ public class Health : MonoBehaviour
     /// </para>
     /// 
     /// </summary>
-    private UnityEvent<float> onDamaged;
+    public UnityEvent<float> onDamaged;
 
     /// <summary>
     /// <para>Notifies that the <c>CurrentHealth</c> has increased.</para><br />
@@ -48,26 +50,35 @@ public class Health : MonoBehaviour
     /// <para>Returns the difference between <c>CurrentHealth</c>'s previous value and current value.</para>
     /// 
     /// </summary>
-    private UnityEvent<float> onHealed;
+    public UnityEvent<float> onHealed;
 
-    public float CurrentHealth { 
-        get => currentHealth; 
-        
+    /// <summary>
+    /// <para>Notifies that the <c>MaxHealth</c> was updated.</para><br />
+    /// 
+    /// <para>Does not check if the value has changed.</para><br />
+    /// 
+    /// Returns new value of <c>MaxHealth</c>
+    /// </summary>
+    public UnityEvent<float> onMaxHealthUpdated;
+
+    public float CurrentHealth {
+        get => currentHealth;
+
         set {
             if (!isDead) {
                 float oldCurrentHealth = currentHealth;
                 currentHealth = value;
 
                 // Death
-                if (currentHealth >= 0f) {
+                if (currentHealth <= 0f) {
                     currentHealth = 0f;
 
                     isDead = true;
                     onDeath.Invoke();
                 }
                 // Overheal
-                else if(currentHealth > maxHealth) {
-                    currentHealth = maxHealth;
+                else if (currentHealth > MaxHealth) {
+                    currentHealth = MaxHealth;
                 }
 
                 // If still not dead, send health changed health events
@@ -76,8 +87,8 @@ public class Health : MonoBehaviour
 
                     onCurrentHealthUpdated.Invoke(currentHealth);
 
-                    if(healthDifference != 0) {
-                        if(healthDifference > 0) {
+                    if (healthDifference != 0) {
+                        if (healthDifference > 0) {
                             onHealed.Invoke(healthDifference);
                         } else {
                             onDamaged.Invoke(healthDifference);
@@ -86,6 +97,27 @@ public class Health : MonoBehaviour
                 }
 
             }
+        }
+    }
+
+    public float MaxHealth {
+        get => this.maxHealth;
+
+        set {
+            this.maxHealth = value;
+            if (currentHealth > maxHealth) {
+                // don't use property, as to not invoke onDamaged event
+                currentHealth = maxHealth;
+            }
+
+            onMaxHealthUpdated.Invoke(maxHealth);
+        }
+    }
+
+    //TODO: Replace with serialized range
+    private void Start() {
+        if(currentHealth > maxHealth) {
+            currentHealth = maxHealth;
         }
     }
 }
