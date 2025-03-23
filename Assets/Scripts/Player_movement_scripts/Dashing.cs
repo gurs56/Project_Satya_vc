@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Dashing : MonoBehaviour
@@ -7,17 +8,14 @@ public class Dashing : MonoBehaviour
     public Transform PlayerCam;
     public tpc cam;  // Ensure this is assigned in the Inspector
     private Rigidbody rb;
-    private PlayerMove pm;  // Changed from PlayerMovementDashing to PlayerMove
+    private PlayerMove pm;
 
     [Header("Dashing")]
     public float dashForce;
     public float dashUpwardForce;
     public float maxDashYSpeed;
     public float dashDuration;
-
-
-    [Header("CameraEffects")]
-    public float dashFov;
+    private Vector3 momentum;
 
     [Header("Settings")]
     public bool useCameraForward = true;
@@ -35,7 +33,7 @@ public class Dashing : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        pm = GetComponent<PlayerMove>();  // Get the PlayerMove component instead
+        pm = GetComponent<PlayerMove>();
 
         if (rb == null)
             Debug.LogError("Rigidbody component is missing on " + gameObject.name);
@@ -47,8 +45,10 @@ public class Dashing : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(dashKey))
+        if (Input.GetKeyDown(dashKey) && dashCdTimer <= 0)
+        {
             Dash();
+        }
 
         if (dashCdTimer > 0)
             dashCdTimer -= Time.deltaTime;
@@ -56,49 +56,48 @@ public class Dashing : MonoBehaviour
 
     private void Dash()
     {
-        if (dashCdTimer > 0) return;
-        else dashCdTimer = dashCd;
-
+        dashCdTimer = dashCd;
         pm.dashing = true;
-        //pm.maxYSpeed = maxDashYSpeed;
 
-        //cam.DoFov(dashFov);
-
-        Transform forwardT;
-
-        if (useCameraForward)
-            forwardT = PlayerCam; /// where you're looking
-        else
-            forwardT = orientation; /// where you're facing (no up or down)
-
+        Transform forwardT = useCameraForward ? PlayerCam : orientation;
         Vector3 direction = GetDirection(forwardT);
+
+        // Save momentum for carryover
+        momentum = rb.linearVelocity;
 
         Vector3 forceToApply = direction * dashForce + orientation.up * dashUpwardForce;
 
-        if (disableGravity)
-            rb.useGravity = false;
+        // Optional: Reset velocity before applying dash
+        if (resetVel)
+            rb.linearVelocity = Vector3.zero;
 
-        delayedForceToApply = forceToApply;
-        //Invoke(nameof(DelayedDashForce), 0.025f);
+        // Start the smooth dash coroutine
+        StartCoroutine(SmoothDash(forceToApply));
 
         Invoke(nameof(ResetDash), dashDuration);
     }
-    private Vector3 delayedForceToApply;
 
-    private void DalayedDashForce()
+    private IEnumerator SmoothDash(Vector3 force)
     {
-        rb.AddForce(delayedForceToApply, ForceMode.Impulse);
+        float time = 0f;
+        Vector3 initialVelocity = momentum;  // Start with the current momentum
+
+        while (time < dashDuration)
+        {
+            // Smoothly interpolate between the initial velocity and the desired dash force
+            rb.linearVelocity = Vector3.Lerp(initialVelocity, force, time / dashDuration);
+            time += Time.deltaTime;
+            yield return null;
+        }
+
+        rb.linearVelocity = force;  // Ensure final speed is the desired dash force
     }
+
     private void ResetDash()
     {
         pm.dashing = false;
-        //pm.maxYSpeed = 0;
-
-        //cam.DoFov(85f);
-
-        if (disableGravity)
-            rb.useGravity = true;
     }
+
     private Vector3 GetDirection(Transform forwardT)
     {
         float horizontalInput = Input.GetAxisRaw("Horizontal");

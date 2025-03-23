@@ -19,6 +19,10 @@ public class PlayerMove : MonoBehaviour
     public float airMultiplier;
     private bool readyToJump;
 
+    [Header("Gravity")]
+    public float gravityMultiplier;
+    public float fallMultiplier;
+
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -122,7 +126,11 @@ public class PlayerMove : MonoBehaviour
         SpeedControl();
         StateHandler();
 
-        rb.drag = (state == MovementState.walking || state == MovementState.sprinting || state == MovementState.air) ? groundDrag : 0;
+        // Adjust drag based on whether grounded or not
+        rb.linearDamping = grounded ? groundDrag : 0;
+
+        // Apply custom gravity
+        ApplyGravity();
     }
 
     private void FixedUpdate()
@@ -152,22 +160,43 @@ public class PlayerMove : MonoBehaviour
 
     private void SpeedControl()
     {
-        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
         if (flatVel.sqrMagnitude > moveSpeed * moveSpeed)
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
+            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
         }
     }
 
     private void Jump()
     {
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        // Calculate the difference between the desired jump force and the current vertical velocity.
+        float velocityChange = jumpForce - rb.linearVelocity.y;
+        Vector3 jumpVelocityChange = new Vector3(0f, velocityChange, 0f);
+
+        // Apply the velocity change so that the player's vertical velocity becomes exactly jumpForce.
+        rb.AddForce(jumpVelocityChange, ForceMode.VelocityChange);
     }
 
     private void ResetJump()
     {
         readyToJump = true;
+    }
+
+    private void ApplyGravity()
+    {
+        if (!grounded)
+        {
+            // Apply extra downward force to make falling feel snappier
+            if (rb.linearVelocity.y < 0)
+            {
+                rb.AddForce(Vector3.down * fallMultiplier, ForceMode.Acceleration);
+            }
+            else
+            {
+                // Apply normal gravity when rising
+                rb.AddForce(Vector3.down * gravityMultiplier, ForceMode.Acceleration);
+            }
+        }
     }
 }
