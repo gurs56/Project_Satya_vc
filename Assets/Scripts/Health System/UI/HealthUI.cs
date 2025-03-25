@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,8 +16,8 @@ public class HealthUI : MonoBehaviour {
         // Initialize health and maxhealth
         SetSliderMaxValue(health.MaxHealth);
 
-        health.onMaxHealthUpdated.AddListener(SetSliderMaxValue);
-        health.onCurrentHealthUpdated.AddListener(SetSliderValue);
+        health.maxHealthUpdated.AddListener(SetSliderMaxValue);
+        health.currentHealthUpdated.AddListener(SetSliderValue);
     }
 
     void SetSliderMaxValue(float value) {
@@ -26,7 +27,7 @@ public class HealthUI : MonoBehaviour {
         slider.value = health.CurrentHealth;
     }
 
-    void SetSliderValue(float value) {
+    void SetSliderValue(float value, float value2) {
         slider.value = value;
     }
 }
