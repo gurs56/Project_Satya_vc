@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,43 +16,34 @@ public class Health : MonoBehaviour {
     /// <summary>
     /// Notifies that <c>CurrentHealth</c> has been fully depleted.
     /// </summary>
-    public UnityEvent onDeath;
+    public UnityEvent death;
 
     /// <summary>
     /// <para>Notifies that the <c>CurrentHealth</c> was updated.</para><br />
     /// 
-    /// <para>Does not check if the value has changed.<br />
-    /// Use <c>onDamaged</c> or <c>onHealed</c> to get the difference in health.</para><br />
-    /// 
     /// Returns new value of <c>CurrentHealth</c>
     /// </summary>
-    public UnityEvent<float> onCurrentHealthUpdated;
+    public UnityEvent<float, float> currentHealthUpdated;
 
     /// <summary>
     /// <para>Notifies that the <c>CurrentHealth</c> has decreased.</para><br />
     /// 
-    /// <para>Does not check if the value has changed.<br />
-    /// Will not be called if <c>CurrentHealth</c>'s value does not change. Use <c>onCurrentHealthUpdated</c>, if required.
-    /// </para><br />
+    /// <para>Not triggered if <c>IsDead</c> is true</para>
     /// 
     /// <para>Returns the difference between <c>CurrentHealth</c>'s previous value and current value.<br />
-    /// Output is not made absolute.
+    /// Output is always negative.
     /// </para>
     /// 
     /// </summary>
-    public UnityEvent<float> onDamaged;
+    public UnityEvent<float> damaged;
 
     /// <summary>
     /// <para>Notifies that the <c>CurrentHealth</c> has increased.</para><br />
     /// 
-    /// <para>Does not check if the value has changed.<br />
-    /// Will not be called if <c>CurrentHealth</c>'s value does not change. Use <c>onCurrentHealthUpdated</c>, if required.
-    /// </para><br />
-    /// 
     /// <para>Returns the difference between <c>CurrentHealth</c>'s previous value and current value.</para>
-    /// 
+    /// Output is always positive.
     /// </summary>
-    public UnityEvent<float> onHealed;
+    public UnityEvent<float> healed;
 
     /// <summary>
     /// <para>Notifies that the <c>MaxHealth</c> was updated.</para><br />
@@ -60,42 +52,60 @@ public class Health : MonoBehaviour {
     /// 
     /// Returns new value of <c>MaxHealth</c>
     /// </summary>
-    public UnityEvent<float> onMaxHealthUpdated;
+    public UnityEvent<float> maxHealthUpdated;
 
     public float CurrentHealth {
         get => this.currentHealth;
 
         set {
-            if (!isDead) {
-                float oldCurrentHealth = currentHealth;
+            if (!IsDead) {
+                var oldCurrentHealth = currentHealth;
+
                 currentHealth = value;
 
-                // Death
-                if (currentHealth <= 0f) {
-                    currentHealth = 0f;
+                Func<float> getHealthDifference = () => {
+                    return currentHealth - oldCurrentHealth;
+                };
 
-                    IsDead = true;
-                }
-                // Overheal
-                else if (currentHealth > MaxHealth) {
-                    currentHealth = MaxHealth;
-                }
+                var healthDifference = getHealthDifference();
 
-                // If still not dead, send health changed health events
-                if (!isDead) {
-                    float healthDifference = currentHealth - oldCurrentHealth;
+                // if health changed
+                if (healthDifference != 0) {
+                    //to make sure we call the is dead event after all other event
+                    var queueIsDead = false;
 
-                    onCurrentHealthUpdated.Invoke(currentHealth);
 
-                    if (healthDifference != 0) {
-                        if (healthDifference > 0) {
-                            onDamaged.Invoke(healthDifference);
-                        } else {
-                            onHealed.Invoke(healthDifference);
+                    var isDamage = true;
+                    //is damage
+                    if (healthDifference < 0) {
+                        if (currentHealth <= 0) {
+                            queueIsDead = true;
+
+                            currentHealth = 0;
                         }
                     }
-                }
 
+                    //is healing
+                    else {
+                        isDamage = false;
+                        if (currentHealth > maxHealth) {
+                            currentHealth = maxHealth;
+                        }
+                    }
+
+                    // the health diff accounting for clamping on death and overhealing
+                    var trueHealthDifference = getHealthDifference();
+
+                    if (isDamage)
+                        damaged.Invoke(trueHealthDifference);
+
+                    else
+                        healed.Invoke(trueHealthDifference);
+
+                    currentHealthUpdated.Invoke(currentHealth, trueHealthDifference);
+
+                    IsDead = queueIsDead;
+                }
             }
         }
     }
@@ -113,26 +123,26 @@ public class Health : MonoBehaviour {
                 currentHealth = maxHealth;
             }
 
-            onMaxHealthUpdated.Invoke(maxHealth);
+            maxHealthUpdated.Invoke(maxHealth);
         }
     }
 
-    public bool IsDead { 
+    public bool IsDead {
         get => isDead;
 
-        set { 
+        set {
             isDead = value;
             if (isDead) {
                 currentHealth = 0;
 
-                onDeath.Invoke();
+                death.Invoke();
             }
         }
     }
 
     //TODO: Replace with serialized range
     private void Start() {
-        if(currentHealth > maxHealth) {
+        if (currentHealth > maxHealth) {
             currentHealth = maxHealth;
         }
     }
