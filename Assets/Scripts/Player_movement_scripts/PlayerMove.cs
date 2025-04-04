@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
+    private PlayerInputActions playerControls;
+
     [Header("Movement")]
     private float moveSpeed;
     public float walkSpeed;
@@ -23,9 +25,9 @@ public class PlayerMove : MonoBehaviour
     public float gravityMultiplier;
     public float fallMultiplier;
 
-    [Header("Keybinds")]
-    public KeyCode jumpKey = KeyCode.Space;
-    public KeyCode sprintKey = KeyCode.LeftShift;
+    //[Header("Keybinds")]
+    //public KeyCode jumpKey = KeyCode.Space;
+    //public KeyCode sprintKey = KeyCode.LeftShift;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -62,7 +64,11 @@ public class PlayerMove : MonoBehaviour
             desiredMoveSpeed = dashSpeed;
             speedChangeFactor = dashSpeedChangeFactor;
         }
-        else if (grounded && Input.GetKey(sprintKey))
+        /*  Ideally, we would be attaching this and the jump action
+         *  to the UnityEvents that PlayerControls.Sprint and PlayerControls.Jump emit, respectively.
+         *  But I don'ty want to change your code too much
+         */
+        else if (grounded && playerControls.Player.Sprint.IsPressed())
         {
             state = MovementState.sprinting;
             desiredMoveSpeed = sprintSpeed;
@@ -110,6 +116,17 @@ public class PlayerMove : MonoBehaviour
         speedChangeFactor = 1f;
         keepMomentum = false;
     }
+    private void Awake() {
+        playerControls = new PlayerInputActions();
+    }
+
+    private void OnEnable() {
+        playerControls.Player.Enable();
+    }
+
+    private void OnDisable() {
+        playerControls.Player.Disable();
+    }
 
     private void Start()
     {
@@ -140,10 +157,11 @@ public class PlayerMove : MonoBehaviour
 
     private void MyInput()
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        var input = playerControls.Player.Move.ReadValue<Vector2>();
+        horizontalInput = input.x;
+        verticalInput = input.y;
 
-        if (Input.GetKey(jumpKey) && readyToJump && grounded)
+        if (playerControls.Player.Jump.WasPerformedThisFrame() && readyToJump && grounded)
         {
             readyToJump = false;
             Jump();
