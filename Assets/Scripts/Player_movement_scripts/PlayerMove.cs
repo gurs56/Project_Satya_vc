@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerMove : MonoBehaviour
 {
-    private PlayerInputActions playerControls;
-
     [Header("Movement")]
     private float moveSpeed;
     public float walkSpeed;
@@ -56,6 +56,8 @@ public class PlayerMove : MonoBehaviour
     private MovementState lastState;
     private bool keepMomentum;
 
+    private PlayerInputManager playerControls;
+
     private void StateHandler()
     {
         if (dashing)
@@ -64,10 +66,6 @@ public class PlayerMove : MonoBehaviour
             desiredMoveSpeed = dashSpeed;
             speedChangeFactor = dashSpeedChangeFactor;
         }
-        /*  Ideally, we would be attaching this and the jump action
-         *  to the UnityEvents that PlayerControls.Sprint and PlayerControls.Jump emit, respectively.
-         *  But I don'ty want to change your code too much
-         */
         else if (grounded && playerControls.Player.Sprint.IsPressed())
         {
             state = MovementState.sprinting;
@@ -116,20 +114,12 @@ public class PlayerMove : MonoBehaviour
         speedChangeFactor = 1f;
         keepMomentum = false;
     }
-    private void Awake() {
-        playerControls = new PlayerInputActions();
-    }
-
-    private void OnEnable() {
-        playerControls.Player.Enable();
-    }
-
-    private void OnDisable() {
-        playerControls.Player.Disable();
-    }
 
     private void Start()
     {
+        playerControls = GetComponent<PlayerInputManager>();
+        ConnectControls();
+
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
@@ -155,18 +145,16 @@ public class PlayerMove : MonoBehaviour
         MovePlayer();
     }
 
+    // Connect jumping to the input callbacks (they are called when the button is pressed rather than checking every frame)
+    private void ConnectControls() {
+        playerControls.Player.Jump.performed += TryJump;
+    }
+
     private void MyInput()
     {
         var input = playerControls.Player.Move.ReadValue<Vector2>();
         horizontalInput = input.x;
         verticalInput = input.y;
-
-        if (playerControls.Player.Jump.WasPerformedThisFrame() && readyToJump && grounded)
-        {
-            readyToJump = false;
-            Jump();
-            Invoke(nameof(ResetJump), jumpCooldown);
-        }
     }
 
     private void MovePlayer()
@@ -183,6 +171,14 @@ public class PlayerMove : MonoBehaviour
         {
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+        }
+    }
+
+    private void TryJump(InputAction.CallbackContext context) {
+        if (readyToJump && grounded) {
+            readyToJump = false;
+            Jump();
+            Invoke(nameof(ResetJump), jumpCooldown);
         }
     }
 

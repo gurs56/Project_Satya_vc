@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerInputActions))]
 public class Dashing : MonoBehaviour
 {
     [Header("References")]
@@ -27,11 +29,13 @@ public class Dashing : MonoBehaviour
     public float dashCd;
     private float dashCdTimer;
 
-    [Header("Input")]
-    public KeyCode dashKey = KeyCode.E;
+    private PlayerInputManager playerControls;
 
     private void Start()
     {
+        playerControls = GetComponent<PlayerInputManager>();
+        playerControls.Player.Dash.performed += TryDash;
+
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMove>();
 
@@ -45,13 +49,14 @@ public class Dashing : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(dashKey) && dashCdTimer <= 0)
-        {
-            Dash();
-        }
-
         if (dashCdTimer > 0)
             dashCdTimer -= Time.deltaTime;
+    }
+
+    private void TryDash(InputAction.CallbackContext context) {
+        if (dashCdTimer <= 0) {
+            Dash();
+        }
     }
 
     private void Dash()
