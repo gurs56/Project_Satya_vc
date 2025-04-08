@@ -2788,7 +2788,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 45
+  field of view: 50
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -2814,8 +2814,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.06531523, y: 0.08481208, z: -0.005571623, w: 0.9942383}
-  m_LocalPosition: {x: 3, y: 6.21, z: 17.75}
+  m_LocalRotation: {x: 0.44721362, y: 0, z: 0, w: 0.8944272}
+  m_LocalPosition: {x: 3, y: 8.63, z: 17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7474,12 +7474,20 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
+      propertyPath: dashCd
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: PlayerCam
       value: 
       objectReference: {fileID: 963194228}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: dashForce
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
+      propertyPath: dashDuration
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: maxDashYSpeed
