@@ -76,7 +76,8 @@ public class Dashing : MonoBehaviour
         delayedForceToApply = forceToApply;
         Invoke(nameof(DelayedDashForce), 0.025f);
 
-        Invoke(nameof(ResetDash), dashDuration);
+        // Fix: Reset dash state after a very short delay so the PlayerMove script resumes control right away.
+        Invoke(nameof(ResetDash), 0.05f);
     }
 
     private void DelayedDashForce()
