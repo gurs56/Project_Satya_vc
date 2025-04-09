@@ -7474,6 +7474,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
+      propertyPath: cam
+      value: 
+      objectReference: {fileID: 963194230}
+    - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: dashCd
       value: 0.25
       objectReference: {fileID: 0}
@@ -7483,19 +7487,19 @@ PrefabInstance:
       objectReference: {fileID: 963194228}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: dashForce
-      value: 10
+      value: 20.8
       objectReference: {fileID: 0}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: dashDuration
-      value: 2
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: maxDashYSpeed
-      value: 0.84
+      value: 1.61
       objectReference: {fileID: 0}
     - target: {fileID: 1065544379502671014, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: dashUpwardForce
-      value: 0.2
+      value: 1.29
       objectReference: {fileID: 0}
     - target: {fileID: 2772721823227359678, guid: 954e489fc52565141b4b19cf7398c6b2, type: 3}
       propertyPath: m_Name

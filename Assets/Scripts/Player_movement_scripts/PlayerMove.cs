@@ -25,10 +25,6 @@ public class PlayerMove : MonoBehaviour
     public float gravityMultiplier;
     public float fallMultiplier;
 
-    //[Header("Keybinds")]
-    //public KeyCode jumpKey = KeyCode.Space;
-    //public KeyCode sprintKey = KeyCode.LeftShift;
-
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
@@ -55,6 +51,9 @@ public class PlayerMove : MonoBehaviour
     private float lastDesiredMoveSpeed;
     private MovementState lastState;
     private bool keepMomentum;
+
+    // Added public maxYSpeed property
+    public float maxYSpeed = 0f;
 
     private PlayerInputManager playerControls;
 
@@ -142,11 +141,16 @@ public class PlayerMove : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovePlayer();
+        // If dashing, skip normal movement to preserve the dash trajectory.
+        if (!dashing)
+            MovePlayer();
+
+        ClampVerticalSpeed();
     }
 
-    // Connect jumping to the input callbacks (they are called when the button is pressed rather than checking every frame)
-    private void ConnectControls() {
+    // Connect jumping to the input callbacks
+    private void ConnectControls()
+    {
         playerControls.Player.Jump.performed += TryJump;
     }
 
@@ -174,8 +178,10 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    private void TryJump(InputAction.CallbackContext context) {
-        if (readyToJump && grounded) {
+    private void TryJump(InputAction.CallbackContext context)
+    {
+        if (readyToJump && grounded)
+        {
             readyToJump = false;
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
@@ -184,11 +190,8 @@ public class PlayerMove : MonoBehaviour
 
     private void Jump()
     {
-        // Calculate the difference between the desired jump force and the current vertical velocity.
         float velocityChange = jumpForce - rb.linearVelocity.y;
         Vector3 jumpVelocityChange = new Vector3(0f, velocityChange, 0f);
-
-        // Apply the velocity change so that the player's vertical velocity becomes exactly jumpForce.
         rb.AddForce(jumpVelocityChange, ForceMode.VelocityChange);
     }
 
@@ -201,16 +204,21 @@ public class PlayerMove : MonoBehaviour
     {
         if (!grounded)
         {
-            // Apply extra downward force to make falling feel snappier
             if (rb.linearVelocity.y < 0)
-            {
                 rb.AddForce(Vector3.down * fallMultiplier, ForceMode.Acceleration);
-            }
             else
-            {
-                // Apply normal gravity when rising
                 rb.AddForce(Vector3.down * gravityMultiplier, ForceMode.Acceleration);
-            }
+        }
+    }
+
+    private void ClampVerticalSpeed()
+    {
+        // If maxYSpeed is set (greater than zero), clamp upward speed to that value.
+        if (maxYSpeed > 0 && rb.linearVelocity.y > maxYSpeed)
+        {
+            Vector3 v = rb.linearVelocity;
+            v.y = maxYSpeed;
+            rb.linearVelocity = v;
         }
     }
 }

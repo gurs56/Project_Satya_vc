@@ -1,88 +1,102 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(PlayerInputActions))]
 public class Dashing : MonoBehaviour
 {
     [Header("References")]
     public Transform orientation;
-    public Transform PlayerCam;
-    public tpc cam;  // Ensure this is assigned in the Inspector
+    public Transform playerCam;
     private Rigidbody rb;
     private PlayerMove pm;
 
     [Header("Dashing")]
     public float dashForce;
+    public float dashUpwardForce;
+    public float maxDashYSpeed;
     public float dashDuration;
+
+    [Header("CameraEffects")]
+    public tpc cam;
+    public float dashFov;
 
     [Header("Settings")]
     public bool useCameraForward = true;
     public bool allowAllDirections = true;
+    public bool disableGravity = false;
     public bool resetVel = true;
 
     [Header("Cooldown")]
     public float dashCd;
     private float dashCdTimer;
 
-    private PlayerInputManager playerControls;
+    [Header("Input")]
+    public KeyCode dashKey = KeyCode.E;
+
+    private Vector3 delayedForceToApply;
 
     private void Start()
     {
-        playerControls = GetComponent<PlayerInputManager>();
-        playerControls.Player.Dash.performed += TryDash;
-
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMove>();
-
-        if (rb == null)
-            Debug.LogError("Rigidbody component is missing on " + gameObject.name);
-        if (pm == null)
-            Debug.LogError("PlayerMove component is missing on " + gameObject.name);
-        if (cam == null)
-            Debug.LogWarning("PlayerCam reference is not assigned on " + gameObject.name);
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(dashKey))
+            Dash();
+
         if (dashCdTimer > 0)
             dashCdTimer -= Time.deltaTime;
     }
 
-    private void TryDash(InputAction.CallbackContext context)
-    {
-        if (dashCdTimer <= 0)
-        {
-            Dash();
-        }
-    }
-
     private void Dash()
     {
-        dashCdTimer = dashCd;
+        if (dashCdTimer > 0) return;
+        else dashCdTimer = dashCd;
+
         pm.dashing = true;
+        pm.maxYSpeed = maxDashYSpeed; // Allow a higher vertical speed cap during dash
 
-        // Choose which transform to use for dash direction
-        Transform forwardT = useCameraForward ? PlayerCam : orientation;
+        // Adjust camera FOV for dash effect.
+        cam.DoFov(dashFov);
+
+        Transform forwardT;
+        if (useCameraForward)
+            forwardT = playerCam;
+        else
+            forwardT = orientation;
+
         Vector3 direction = GetDirection(forwardT);
+        Vector3 forceToApply = direction * dashForce + orientation.up * dashUpwardForce;
 
-        // Calculate the dash velocity based solely on horizontal movement
-        Vector3 dashVelocity = direction * dashForce;
+        if (disableGravity)
+            rb.useGravity = false;
 
-        // Optionally reset velocity (ensuring vertical velocity is also cleared)
+        delayedForceToApply = forceToApply;
+        Invoke(nameof(DelayedDashForce), 0.025f);
+
+        Invoke(nameof(ResetDash), dashDuration);
+    }
+
+    private void DelayedDashForce()
+    {
         if (resetVel)
             rb.linearVelocity = Vector3.zero;
 
-        // Apply the horizontal dash force
-        rb.linearVelocity = dashVelocity;
-
-        // Reset dash state after dashDuration seconds
-        Invoke(nameof(ResetDash), dashDuration);
+        rb.AddForce(delayedForceToApply, ForceMode.Impulse);
     }
 
     private void ResetDash()
     {
         pm.dashing = false;
+        pm.maxYSpeed = 0; // Reset vertical speed cap
+
+        // Reset camera FOV to a default value (85f in this example)
+        cam.DoFov(85f);
+
+        if (disableGravity)
+            rb.useGravity = true;
     }
 
     private Vector3 GetDirection(Transform forwardT)
@@ -90,19 +104,16 @@ public class Dashing : MonoBehaviour
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
 
-        Vector3 inputDirection;
+        Vector3 direction = new Vector3();
+
         if (allowAllDirections)
-            inputDirection = forwardT.forward * verticalInput + forwardT.right * horizontalInput;
+            direction = forwardT.forward * verticalInput + forwardT.right * horizontalInput;
         else
-            inputDirection = forwardT.forward;
+            direction = forwardT.forward;
 
-        // Default to forward if there is no input
         if (horizontalInput == 0 && verticalInput == 0)
-            inputDirection = forwardT.forward;
+            direction = forwardT.forward;
 
-        // Project the direction onto the horizontal plane to remove any vertical component
-        Vector3 flatDirection = Vector3.ProjectOnPlane(inputDirection, Vector3.up);
-        return flatDirection.normalized;
+        return direction.normalized;
     }
 }
-
