@@ -5,7 +5,7 @@ public class HealthTester : MonoBehaviour {
     [SerializeField]
     Health health;
 
-    float difference = 15f;
+    float difference = 1f;
 
     float oldhealth = 0;
 
@@ -19,7 +19,7 @@ public class HealthTester : MonoBehaviour {
         doInput(KeyCode.LeftArrow, -difference, true);
     }
     void doInput(KeyCode keyCode, float dif, bool maxhealth) {
-        if (Input.GetKeyDown(keyCode)) {
+        if (Input.GetKey(keyCode)) {
             if (maxhealth) {
                 health.MaxHealth += dif;
             } else { 
