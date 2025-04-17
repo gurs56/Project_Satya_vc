@@ -55,7 +55,7 @@ Material:
     m_Floats:
     - _ColorMask: 15
     - _Full_Health_Value: 100
-    - _Health_Value: 66
+    - _Health_Value: 85
     - _Low_Health_Value: 0
     - _Med_Health_Value: 50
     - _Stencil: 0
