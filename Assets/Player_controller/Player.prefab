@@ -88,7 +88,7 @@ MonoBehaviour:
   playerHeight: 2
   whatIsGround:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   orientation: {fileID: 5879538623962136875}
   state: 0
   dashing: 0

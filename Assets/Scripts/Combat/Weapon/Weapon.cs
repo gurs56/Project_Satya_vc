@@ -8,7 +8,11 @@ public class Weapon : MonoBehaviour {
     public Entity parentEntity { get; private set; }
 
     private void Awake() {
-        var col = GetComponent<Collider>();
+        Collider col;
+        TryGetComponent(out col);
+        if (col == null) { 
+            col = GetComponentInChildren<Collider>();
+        }
         col.excludeLayers = ~0;
         col.includeLayers = weaponObject.damageableLayers;
 
