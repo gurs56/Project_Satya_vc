@@ -3,12 +3,7 @@ guid: 45926632e36605943870884556f74c8c
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: SWORD_PLANE
-    second: {fileID: 2100000, guid: c17268495ba8d284a90e9648d3ceab35, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
