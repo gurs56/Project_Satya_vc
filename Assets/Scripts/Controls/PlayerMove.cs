@@ -3,28 +3,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour {
-    [Header("Movement")]
-    private float moveSpeed;
-    public float walkSpeed;
-    public float sprintSpeed;
-    public float dashSpeed;
-    public float dashSpeedChangeFactor;
+    public PlayerData data;
+
+    private float moveSpeed = 0f;
     private float speedChangeFactor = 1f;
 
-    public float groundDrag;
-    public float jumpForce;
-    public float jumpCooldown;
-    public float airMultiplier;
     private bool readyToJump;
 
-    [Header("Gravity")]
-    public float gravityMultiplier;
-    public float fallMultiplier;
-
-    [Header("Ground Check")]
-    public float playerHeight;
-    [Tooltip("Determines which layers count as ground")]
-    public LayerMask groundLayerMask;
     private bool grounded;
 
     public Transform orientation;
@@ -55,17 +40,17 @@ public class PlayerMove : MonoBehaviour {
     private void StateHandler() {
         if (dashing) {
             state = MovementState.dashing;
-            desiredMoveSpeed = dashSpeed;
-            speedChangeFactor = dashSpeedChangeFactor;
+            desiredMoveSpeed = data.dashSpeed;
+            speedChangeFactor = data.dashSpeedChangeFactor;
         } else if (grounded && playerControls.Player.Sprint.IsPressed()) {
             state = MovementState.sprinting;
-            desiredMoveSpeed = sprintSpeed;
+            desiredMoveSpeed = data.sprintSpeed;
         } else if (grounded) {
             state = MovementState.walking;
-            desiredMoveSpeed = walkSpeed;
+            desiredMoveSpeed = data.walkSpeed;
         } else {
             state = MovementState.air;
-            desiredMoveSpeed = ( desiredMoveSpeed < sprintSpeed ) ? walkSpeed : sprintSpeed;
+            desiredMoveSpeed = ( desiredMoveSpeed < data.sprintSpeed ) ? data.walkSpeed : data.sprintSpeed;
         }
 
         bool desiredMoveSpeedHasChanged = desiredMoveSpeed != lastDesiredMoveSpeed;
@@ -109,13 +94,13 @@ public class PlayerMove : MonoBehaviour {
     }
 
     private void Update() {
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.3f, groundLayerMask);
+        grounded = Physics.Raycast(transform.position, Vector3.down, data.playerHeight * 0.5f + 0.3f, data.groundLayerMask);
 
         SpeedControl();
         StateHandler();
 
         // Adjust drag based on whether grounded or not
-        rb.linearDamping = grounded ? groundDrag : 0;
+        rb.linearDamping = grounded ? data.groundDrag : 0;
 
         // Apply custom gravity
         ApplyGravity();
@@ -141,7 +126,7 @@ public class PlayerMove : MonoBehaviour {
     private void MovePlayer() {
         var input = GetLocomotionInput();
         moveDirection = orientation.forward * input.y + orientation.right * input.x;
-        float forceMultiplier = grounded ? 1f : airMultiplier;
+        float forceMultiplier = grounded ? 1f : data.airMultiplier;
         rb.AddForce(moveDirection.normalized * moveSpeed * 10f * forceMultiplier, ForceMode.Force);
     }
 
@@ -157,12 +142,12 @@ public class PlayerMove : MonoBehaviour {
         if (readyToJump && grounded) {
             readyToJump = false;
             Jump();
-            Invoke(nameof(ResetJump), jumpCooldown);
+            Invoke(nameof(ResetJump), data.jumpCooldown);
         }
     }
 
     private void Jump() {
-        float velocityChange = jumpForce - rb.linearVelocity.y;
+        float velocityChange = data.jumpForce - rb.linearVelocity.y;
         Vector3 jumpVelocityChange = new Vector3(0f, velocityChange, 0f);
         rb.AddForce(jumpVelocityChange, ForceMode.VelocityChange);
     }
@@ -174,9 +159,9 @@ public class PlayerMove : MonoBehaviour {
     private void ApplyGravity() {
         if (!grounded) {
             if (rb.linearVelocity.y < 0)
-                rb.AddForce(Vector3.down * fallMultiplier, ForceMode.Acceleration);
+                rb.AddForce(Vector3.down * data.fallMultiplier, ForceMode.Acceleration);
             else
-                rb.AddForce(Vector3.down * gravityMultiplier, ForceMode.Acceleration);
+                rb.AddForce(Vector3.down * data.gravityMultiplier, ForceMode.Acceleration);
         }
     }
 

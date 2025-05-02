@@ -12,7 +12,7 @@ public class Controller : MonoBehaviour {
     //    add => m_OnPerformed.AddCallback(value);
     //    remove => m_OnPerformed.RemoveCallback(value);
     //}
-    Control control;
+    public Control control;
 
     [UDictionary.Split(30, 70)]
     public UDictionary3 dictionary3;
