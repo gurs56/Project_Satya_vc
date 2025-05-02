@@ -86,7 +86,7 @@ MonoBehaviour:
   gravityMultiplier: 0
   fallMultiplier: 0
   playerHeight: 2
-  whatIsGround:
+  groundLayerMask:
     serializedVersion: 2
     m_Bits: 0
   orientation: {fileID: 5879538623962136875}
