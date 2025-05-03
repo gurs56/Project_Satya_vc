@@ -6,9 +6,6 @@ public class PlayerInputManager : MonoBehaviour {
     [SerializeField]
     private PlayerInputActions playerInputActions;
 
-    [SerializeField]
-    InputAction action;
-
     public PlayerInputActions PlayerInputActions {
         get {
             return playerInputActions;
