@@ -7,7 +7,11 @@ using UnityEngine.InputSystem;
 public class TestPlayerController : MonoBehaviour {
     PlayerInputManager input;
 
-    public HashSet<TestBehaviour> BehaviourSet {
+    public HashSet<TestInstataneousBehaviour> InstantaneousBehaviourSet {
+        get;
+        private set;
+    } = new HashSet<TestInstataneousBehaviour>();
+    public HashSet<TestBehaviour> SustainedBehaviourSet {
         get;
         private set;
     } = new HashSet<TestBehaviour>();
@@ -20,11 +24,19 @@ public class TestPlayerController : MonoBehaviour {
 
         behaviourInputActions = new Dictionary<Type, InputAction> {
             {typeof(TestJumpBehaviour), input.Player.Jump},
-            {typeof(TestDashBehaviour), input.Player.Dash}
+            {typeof(TestDashBehaviour), input.Player.Dash},
+            {typeof(TestLocomotionBehaviour), input.Player.Move }
         };
 
-        foreach (var item in BehaviourSet) {
+        foreach (var item in InstantaneousBehaviourSet) {
             behaviourInputActions[item.GetType()].performed += (InputAction.CallbackContext context) => { item.Act(); };
         }
+
+        //foreach (var item in SustainedBehaviourSet) {
+        //    var a = behaviourInputActions[item.GetType()];
+        //    var i = (TestSustainedBehaviour)item;
+
+        //    item.  i.ReadValue<>();
+        //}
     }
 }

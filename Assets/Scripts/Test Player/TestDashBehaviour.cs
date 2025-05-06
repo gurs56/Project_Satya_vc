@@ -1,6 +1,3 @@
-using UnityEngine;
-
-public class TestDashBehaviour : TestBehaviour
-{
+public class TestDashBehaviour : TestInstataneousBehaviour {
     public override void Act() { print("Dashed"); }
 }

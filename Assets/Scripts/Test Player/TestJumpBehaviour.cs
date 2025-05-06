@@ -1,6 +1,4 @@
-using UnityEngine;
-
-public class TestJumpBehaviour : TestBehaviour {
+public class TestJumpBehaviour : TestInstataneousBehaviour {
     public override void Act() {
         print("jumped");
     }
