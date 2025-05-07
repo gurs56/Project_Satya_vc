@@ -28,7 +28,10 @@ public class WeaponObject : ScriptableObject {
     /// <param name="weapon"></param>
     /// <param name="target"></param>
     /// <returns>Whether or not the collision was successfully handled</returns>
-    public virtual bool HandleWeaponCollision(Weapon weapon, Entity target) { return false; }
+    public virtual bool HandleWeaponCollision(Weapon weapon, Health health) {
+        health.CurrentHealth -= damage;
+        return true; 
+    }
 
 
 }

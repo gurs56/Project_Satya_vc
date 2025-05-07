@@ -12,17 +12,11 @@ public class Weapon : MonoBehaviour {
         TryGetComponent(out col);
         if (col == null) { 
             col = GetComponentInChildren<Collider>();
+            print(col);
         }
-        col.excludeLayers = ~0;
+        //col.excludeLayers = ~0;
         col.includeLayers = weaponObject.damageableLayers;
 
         parentEntity = GetComponentInParent<Entity>();
-    }
-
-    private void OnTriggerEnter(Collider other) {
-        var target = other.GetComponent<Entity>();
-        if (target != null) {
-            weaponObject.HandleWeaponCollision(this, target);
-        }
     }
 }
