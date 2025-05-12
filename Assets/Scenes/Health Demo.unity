@@ -976,10 +976,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1887148704}
     m_Modifications:
-    - target: {fileID: 1989798346108167458, guid: fc6b4876b7760b441895102700b0e9e6, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2562150007207203077, guid: fc6b4876b7760b441895102700b0e9e6, type: 3}
       propertyPath: m_Name
       value: HealthUI

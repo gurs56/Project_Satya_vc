@@ -52,7 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: {fileID: 0}
-  shadedImage: {fileID: 0}
+  shadedImage: {fileID: 2386287981604225855}
 --- !u!114 &1906413520168657300
 MonoBehaviour:
   m_ObjectHideFlags: 0
