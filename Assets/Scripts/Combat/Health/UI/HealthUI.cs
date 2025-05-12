@@ -1,11 +1,13 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 [RequireComponent(typeof(Slider))]
 public class HealthUI : MonoBehaviour {
     [SerializeField]
     Health health;
+
     [SerializeField]
     Image shadedImage;
 
@@ -16,8 +18,9 @@ public class HealthUI : MonoBehaviour {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         slider = GetComponent<Slider>();
+        material = transform.GetChild(0).GetComponent<Image>().materialForRendering;
 
-        material = shadedImage.materialForRendering;
+        material.SetFloat("_Health_Value", health.CurrentHealth);
 
         // Initialize health and maxhealth
         SetSliderMaxValue(health.MaxHealth);
