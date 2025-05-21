@@ -5,9 +5,6 @@ using UnityEngine.InputSystem;
 public class PlayerMove : MonoBehaviour {
     public PlayerData data;
 
-    private float moveSpeed = 0f;
-    private float speedChangeFactor = 1f;
-
     private bool readyToJump;
 
     private bool grounded;
@@ -26,10 +23,7 @@ public class PlayerMove : MonoBehaviour {
     }
 
     public bool dashing;
-    private float desiredMoveSpeed;
-    private float lastDesiredMoveSpeed;
     private MovementState lastState;
-    private bool keepMomentum;
 
     // Added public maxYSpeed property
     public float maxYSpeed = 0f;
@@ -66,22 +60,6 @@ public class PlayerMove : MonoBehaviour {
 
         lastDesiredMoveSpeed = desiredMoveSpeed;
         lastState = state;
-    }
-
-    private IEnumerator SmoothlyLerpMoveSpeed() {
-        float time = 0;
-        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
-        float startValue = moveSpeed;
-
-        while (time < difference) {
-            moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, time / difference);
-            time += Time.deltaTime * speedChangeFactor;
-            yield return null;
-        }
-
-        moveSpeed = desiredMoveSpeed;
-        speedChangeFactor = 1f;
-        keepMomentum = false;
     }
 
     private void Start() {
@@ -123,20 +101,7 @@ public class PlayerMove : MonoBehaviour {
         return playerControls.Motion.ReadValue<Vector2>();
     }
 
-    private void MovePlayer() {
-        var input = GetLocomotionInput();
-        moveDirection = orientation.forward * input.y + orientation.right * input.x;
-        float forceMultiplier = grounded ? 1f : data.airMultiplier;
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f * forceMultiplier, ForceMode.Force);
-    }
 
-    private void SpeedControl() {
-        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        if (flatVel.sqrMagnitude > moveSpeed * moveSpeed) {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
-        }
-    }
 
     private void TryJump(InputAction.CallbackContext context) {
         if (readyToJump && grounded) {

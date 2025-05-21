@@ -5,7 +5,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlayerData", menuName = "Project Satya/PlayerData")]
 public class PlayerData : ScriptableObject {
     [Header("Movement")]
-    public float walkSpeed;
     public float sprintSpeed;
     public float dashSpeed;
     public float dashSpeedChangeFactor;
