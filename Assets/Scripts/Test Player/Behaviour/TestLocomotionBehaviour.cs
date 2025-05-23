@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CharacterController))]
 public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
-    float speed = 1f;
+    
 
     private void Update() {
         
@@ -34,14 +34,6 @@ public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
 
     //private void Update() {
 
-    //}
-
-    //private void OnDisable() {
-    //    ResetState();
-    //}
-
-    //public void ResetState() {
-    //    state = new State();
     //}
 
     //private void MovePlayer() {

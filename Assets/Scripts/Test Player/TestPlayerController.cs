@@ -11,6 +11,7 @@ public class TestPlayerController : MonoBehaviour {
         get;
         private set;
     } = new HashSet<TestInstataneousBehaviour>();
+
     public HashSet<TestBehaviour> SustainedBehaviourSet {
         get;
         private set;

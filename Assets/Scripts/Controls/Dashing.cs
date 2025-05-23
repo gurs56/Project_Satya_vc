@@ -55,8 +55,8 @@ public class Dashing : MonoBehaviour
         if (dashCdTimer > 0) return;
         else dashCdTimer = dashCd;
 
-        pm.dashing = true;
-        pm.maxYSpeed = maxDashYSpeed; // Allow a higher vertical speed cap during dash
+        //pm.dashing = true;
+        //pm.maxYSpeed = maxDashYSpeed; // Allow a higher vertical speed cap during dash
 
         // Adjust camera FOV for dash effect.
         cam.DoFov(dashFov);
@@ -89,8 +89,8 @@ public class Dashing : MonoBehaviour
 
     private void ResetDash()
     {
-        pm.dashing = false;
-        pm.maxYSpeed = 0; // Reset vertical speed cap
+        //pm.dashing = false;
+        //pm.maxYSpeed = 0; // Reset vertical speed cap
 
         // Reset camera FOV to a default value (85f in this example)
         cam.DoFov(85f);
