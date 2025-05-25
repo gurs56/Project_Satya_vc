@@ -6,7 +6,7 @@ public abstract class TestBehaviour : MonoBehaviour {
 
     //public State state;
 
-    private void Awake() {
+    protected void Awake() {
         controller = GetComponent<TestPlayerController>();
     }
 

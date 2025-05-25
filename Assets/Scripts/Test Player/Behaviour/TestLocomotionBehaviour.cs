@@ -6,7 +6,18 @@ using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(CharacterController))]
 public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
-    
+    [SerializeField]
+    private TestLocomotionData data;
+
+    public TestLocomotionData Data {
+        get { return data; }
+    }
+
+    private CharacterController cc;
+
+    private void Start() {
+        cc = GetComponent<CharacterController>();
+    }
 
     private void Update() {
         
