@@ -10,6 +10,13 @@ public abstract class TestBehaviour : MonoBehaviour {
         controller = GetComponent<TestPlayerController>();
     }
 
+    //call act with no modifiers
+    public void Act() {
+        Act<object>(null);
+    }
+
+    public abstract void Act<T>(T data);
+
     //private void OnDisable() {
     //    if (state.resetOnDisable)
     //        ResetState();

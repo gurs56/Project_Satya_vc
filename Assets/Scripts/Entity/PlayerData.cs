@@ -8,6 +8,7 @@ public class PlayerData : ScriptableObject {
     public float sprintSpeed;
     public float dashSpeed;
     public float dashSpeedChangeFactor;
+    public float walkSpeed;
 
     public float groundDrag;
     public float jumpForce;

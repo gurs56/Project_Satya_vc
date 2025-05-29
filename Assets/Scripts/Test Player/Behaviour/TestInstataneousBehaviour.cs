@@ -3,5 +3,4 @@ public abstract class TestInstataneousBehaviour : TestBehaviour {
         base.Awake();
         controller.InstantaneousBehaviourSet.Add(this);
     }
-    public abstract void Act();
 }

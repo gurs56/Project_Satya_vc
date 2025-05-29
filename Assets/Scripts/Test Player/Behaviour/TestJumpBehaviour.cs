@@ -33,7 +33,7 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
         locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
     }
 
-    public override void Act() {
+    public override void Act<T>(T data) {
         if (physicsHandler.IsGrounded) {
             Jump();
         }

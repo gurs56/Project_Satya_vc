@@ -1,3 +1,3 @@
 public class TestDashBehaviour : TestInstataneousBehaviour {
-    public override void Act() { print("Dashed"); }
+    public override void Act<T>(T data) { print("Dashed"); }
 }

@@ -3,135 +3,174 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour {
-    //public PlayerData data;
+    public PlayerData data;
 
-    //public Transform orientation;
+    private float moveSpeed = 0f;
+    private float speedChangeFactor = 1f;
 
-    //private Vector3 moveDirection;
-    //private Rigidbody rb;
+    private bool readyToJump;
 
-    //public MovementState state;
-    //public enum MovementState {
-    //    walking,
-    //    dashing,
-    //    sprinting,
-    //    air
-    //}
+    private bool grounded;
 
-    //public bool dashing;
-    //private MovementState lastState;
+    public Transform orientation;
 
-    //// Added public maxYSpeed property
-    //public float maxYSpeed = 0f;
+    private Vector3 moveDirection;
+    private Rigidbody rb;
 
-    //private PlayerInputManager playerControls;
+    public MovementState state;
+    public enum MovementState {
+        walking,
+        dashing,
+        sprinting,
+        air
+    }
 
-    ////should be a state machine
-    //private void StateHandler() {
-    //    if (dashing) {
-    //        state = MovementState.dashing;
-    //        desiredMoveSpeed = data.dashSpeed;
-    //        speedChangeFactor = data.dashSpeedChangeFactor;
-    //    } else if (grounded && playerControls.Player.Sprint.IsPressed()) {
-    //        state = MovementState.sprinting;
-    //        desiredMoveSpeed = data.sprintSpeed;
-    //    } else if (grounded) {
-    //        state = MovementState.walking;
-    //        desiredMoveSpeed = data.walkSpeed;
-    //    } else {
-    //        state = MovementState.air;
-    //        desiredMoveSpeed = ( desiredMoveSpeed < data.sprintSpeed ) ? data.walkSpeed : data.sprintSpeed;
-    //    }
+    public bool dashing;
+    private float desiredMoveSpeed;
+    private float lastDesiredMoveSpeed;
+    private MovementState lastState;
+    private bool keepMomentum;
 
-    //    bool desiredMoveSpeedHasChanged = desiredMoveSpeed != lastDesiredMoveSpeed;
-    //    if (lastState == MovementState.dashing)
-    //        keepMomentum = true;
+    // Added public maxYSpeed property
+    public float maxYSpeed = 0f;
 
-    //    if (desiredMoveSpeedHasChanged) {
-    //        if (keepMomentum)
-    //            StartCoroutine(SmoothlyLerpMoveSpeed());
-    //        else
-    //            moveSpeed = desiredMoveSpeed;
-    //    }
+    private PlayerInputManager playerControls;
 
-    //    lastDesiredMoveSpeed = desiredMoveSpeed;
-    //    lastState = state;
-    //}
+    //should be a state machine
+    private void StateHandler() {
+        if (dashing) {
+            state = MovementState.dashing;
+            desiredMoveSpeed = data.dashSpeed;
+            speedChangeFactor = data.dashSpeedChangeFactor;
+        } else if (grounded && playerControls.Player.Sprint.IsPressed()) {
+            state = MovementState.sprinting;
+            desiredMoveSpeed = data.sprintSpeed;
+        } else if (grounded) {
+            state = MovementState.walking;
+            desiredMoveSpeed = data.walkSpeed;
+        } else {
+            state = MovementState.air;
+            desiredMoveSpeed = ( desiredMoveSpeed < data.sprintSpeed ) ? data.walkSpeed : data.sprintSpeed;
+        }
 
-    //private void Start() {
-    //    playerControls = GetComponent<PlayerInputManager>();
-    //    ConnectControls();
+        bool desiredMoveSpeedHasChanged = desiredMoveSpeed != lastDesiredMoveSpeed;
+        if (lastState == MovementState.dashing)
+            keepMomentum = true;
 
-    //    rb = GetComponent<Rigidbody>();
-    //    rb.freezeRotation = true;
-    //    readyToJump = true;
-    //}
+        if (desiredMoveSpeedHasChanged) {
+            if (keepMomentum)
+                StartCoroutine(SmoothlyLerpMoveSpeed());
+            else
+                moveSpeed = desiredMoveSpeed;
+        }
 
-    //private void Update() {
-    //    grounded = Physics.Raycast(transform.position, Vector3.down, data.playerHeight * 0.5f + 0.3f, data.groundLayerMask);
+        lastDesiredMoveSpeed = desiredMoveSpeed;
+        lastState = state;
+    }
 
-    //    SpeedControl();
-    //    StateHandler();
+    private IEnumerator SmoothlyLerpMoveSpeed() {
+        float time = 0;
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
+        float startValue = moveSpeed;
 
-    //    // Adjust drag based on whether grounded or not
-    //    rb.linearDamping = grounded ? data.groundDrag : 0;
+        while (time < difference) {
+            moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, time / difference);
+            time += Time.deltaTime * speedChangeFactor;
+            yield return null;
+        }
 
-    //    // Apply custom gravity
-    //    ApplyGravity();
-    //}
+        moveSpeed = desiredMoveSpeed;
+        speedChangeFactor = 1f;
+        keepMomentum = false;
+    }
 
-    //private void FixedUpdate() {
-    //    // If dashing, skip normal movement to preserve the dash trajectory.
-    //    if (!dashing)
-    //        MovePlayer();
+    private void Start() {
+        playerControls = GetComponent<PlayerInputManager>();
+        ConnectControls();
 
-    //    ClampVerticalSpeed();
-    //}
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+        readyToJump = true;
+    }
 
-    //// Connect jumping to the input callbacks
-    //private void ConnectControls() {
-    //    playerControls.Player.Jump.performed += TryJump;
-    //}
+    private void Update() {
+        grounded = Physics.Raycast(transform.position, Vector3.down, data.playerHeight * 0.5f + 0.3f, data.groundLayerMask);
 
-    //private Vector2 GetLocomotionInput() {
-    //    return playerControls.Motion.ReadValue<Vector2>();
-    //}
+        SpeedControl();
+        StateHandler();
 
+        // Adjust drag based on whether grounded or not
+        rb.linearDamping = grounded ? data.groundDrag : 0;
 
+        // Apply custom gravity
+        ApplyGravity();
+    }
 
-    //private void TryJump(InputAction.CallbackContext context) {
-    //    if (readyToJump && grounded) {
-    //        readyToJump = false;
-    //        Jump();
-    //        Invoke(nameof(ResetJump), data.jumpCooldown);
-    //    }
-    //}
+    private void FixedUpdate() {
+        // If dashing, skip normal movement to preserve the dash trajectory.
+        if (!dashing)
+            MovePlayer();
 
-    //private void Jump() {
-    //    float velocityChange = data.jumpForce - rb.linearVelocity.y;
-    //    Vector3 jumpVelocityChange = new Vector3(0f, velocityChange, 0f);
-    //    rb.AddForce(jumpVelocityChange, ForceMode.VelocityChange);
-    //}
+        ClampVerticalSpeed();
+    }
 
-    //private void ResetJump() {
-    //    readyToJump = true;
-    //}
+    // Connect jumping to the input callbacks
+    private void ConnectControls() {
+        playerControls.Player.Jump.performed += TryJump;
+    }
 
-    //private void ApplyGravity() {
-    //    if (!grounded) {
-    //        if (rb.linearVelocity.y < 0)
-    //            rb.AddForce(Vector3.down * data.fallMultiplier, ForceMode.Acceleration);
-    //        else
-    //            rb.AddForce(Vector3.down * data.gravityMultiplier, ForceMode.Acceleration);
-    //    }
-    //}
+    private Vector2 GetLocomotionInput() {
+        return playerControls.Motion.ReadValue<Vector2>();
+    }
 
-    //private void ClampVerticalSpeed() {
-    //    // If maxYSpeed is set (greater than zero), clamp upward speed to that value.
-    //    if (maxYSpeed > 0 && rb.linearVelocity.y > maxYSpeed) {
-    //        Vector3 v = rb.linearVelocity;
-    //        v.y = maxYSpeed;
-    //        rb.linearVelocity = v;
-    //    }
-    //}
+    private void MovePlayer() {
+        var input = GetLocomotionInput();
+        moveDirection = orientation.forward * input.y + orientation.right * input.x;
+        float forceMultiplier = grounded ? 1f : data.airMultiplier;
+        rb.AddForce(moveDirection.normalized * moveSpeed * 10f * forceMultiplier, ForceMode.Force);
+    }
+
+    private void SpeedControl() {
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        if (flatVel.sqrMagnitude > moveSpeed * moveSpeed) {
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
+        }
+    }
+
+    private void TryJump(InputAction.CallbackContext context) {
+        if (readyToJump && grounded) {
+            readyToJump = false;
+            Jump();
+            Invoke(nameof(ResetJump), data.jumpCooldown);
+        }
+    }
+
+    private void Jump() {
+        float velocityChange = data.jumpForce - rb.linearVelocity.y;
+        Vector3 jumpVelocityChange = new Vector3(0f, velocityChange, 0f);
+        rb.AddForce(jumpVelocityChange, ForceMode.VelocityChange);
+    }
+
+    private void ResetJump() {
+        readyToJump = true;
+    }
+
+    private void ApplyGravity() {
+        if (!grounded) {
+            if (rb.linearVelocity.y < 0)
+                rb.AddForce(Vector3.down * data.fallMultiplier, ForceMode.Acceleration);
+            else
+                rb.AddForce(Vector3.down * data.gravityMultiplier, ForceMode.Acceleration);
+        }
+    }
+
+    private void ClampVerticalSpeed() {
+        // If maxYSpeed is set (greater than zero), clamp upward speed to that value.
+        if (maxYSpeed > 0 && rb.linearVelocity.y > maxYSpeed) {
+            Vector3 v = rb.linearVelocity;
+            v.y = maxYSpeed;
+            rb.linearVelocity = v;
+        }
+    }
 }

@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
-
 
 [RequireComponent(typeof(CharacterController))]
 public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
@@ -20,12 +17,14 @@ public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
     }
 
     private void Update() {
-        
+
     }
 
     Vector2 NormalizeInput(Vector2 input) {
-        return input.magnitude > 1 ? input.normalized: input;
+        return input.magnitude > 1 ? input.normalized : input;
     }
+
+    public override void Act<T>(T data) => throw new NotImplementedException();
 
     //public float walkSpeed;
 
