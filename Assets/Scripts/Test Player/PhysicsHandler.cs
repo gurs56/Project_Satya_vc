@@ -5,39 +5,44 @@ public class PhysicsHandler : MonoBehaviour {
     [SerializeField]
     private float defaultGravity = 1f;
 
+    [SerializeField]
+    private GroundDetector groundDetector;
+
     [HideInInspector]
     public float gravityAccel = 1f;
 
     [HideInInspector]
     public Vector3 velocity;
 
+    public Vector3 OldVelocity { get; private set; }
+
     private CharacterController cc;
-    /// <summary>
-    /// Was the character controller grounded last frame?
-    /// </summary>
-    private bool wasGrounded = false;
+
+    public bool IsGrounded {
+        get { return groundDetector.IsGrounded; }
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         cc = GetComponent<CharacterController>();
         gravityAccel = defaultGravity;
+
+        groundDetector.onGrounded.AddListener(() => { velocity.y = 0; });
     }
 
     // Update is called once per frame
     void Update() {
-        if (!cc.isGrounded) {
+        if (!IsGrounded) {
             Fall();
-        } else if (wasGrounded != cc.isGrounded) {
-            velocity.y = 0;
         }
+        print(IsGrounded);
 
-        print(wasGrounded = cc.isGrounded);
-
-        wasGrounded = cc.isGrounded;
         cc.Move(velocity * Time.deltaTime);
+
+        OldVelocity = velocity;
     }
 
     void Fall() {
-        velocity.y -= gravityAccel;
+        velocity.y -= gravityAccel*Time.deltaTime;
     }
 }

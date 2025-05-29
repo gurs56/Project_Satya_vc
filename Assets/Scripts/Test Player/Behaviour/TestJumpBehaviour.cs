@@ -16,11 +16,11 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
     #endregion
 
     public float JumpGravity {
-        get { return 2 * data.jumpHeight / Mathf.Pow(data.jumpPeakTime, 2); }
+        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(data.jumpPeakTime, 2); }
     }
 
     public float FallGravity {
-        get { return 2 * data.jumpHeight / Mathf.Pow(data.jumpFallTime, 2); }
+        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(data.jumpFallTime, 2); }
     }
 
     public float JumpVelocity {
@@ -34,15 +34,20 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
     }
 
     public override void Act() {
-        physicsHandler.velocity.y = JumpVelocity;
-        physicsHandler.gravityAccel = JumpGravity;
-        print("jumped");
+        if (physicsHandler.IsGrounded) {
+            Jump();
+        }
     }
 
     private void Update() {
         // if falling, apply fall gravity
-        if (characterController.velocity.y < 0f)
+        if (physicsHandler.velocity.y <= 0f)
             physicsHandler.gravityAccel = FallGravity;
+    }
+
+    private void Jump() {
+        physicsHandler.velocity.y = JumpVelocity;
+        physicsHandler.gravityAccel = JumpGravity;
     }
 
 }
