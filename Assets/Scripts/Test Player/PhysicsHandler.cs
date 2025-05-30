@@ -35,7 +35,6 @@ public class PhysicsHandler : MonoBehaviour {
         if (!IsGrounded) {
             Fall();
         }
-        print(IsGrounded);
 
         cc.Move(velocity * Time.deltaTime);
 

@@ -4,19 +4,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerInputManager))]
-public class TestPlayerController : MonoBehaviour {
+public class TestPlayerController : TestController {
     PlayerInputManager input;
 
-    public HashSet<TestInstataneousBehaviour> InstantaneousBehaviourSet {
-        get;
-        private set;
-    } = new HashSet<TestInstataneousBehaviour>();
-
-    public HashSet<TestBehaviour> SustainedBehaviourSet {
-        get;
-        private set;
-    } = new HashSet<TestBehaviour>();
-
+    // Dictionarry connecting inputactions to behaviours
     private Dictionary<Type, InputAction> behaviourInputActions = new();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -33,11 +24,17 @@ public class TestPlayerController : MonoBehaviour {
             behaviourInputActions[item.GetType()].performed += (InputAction.CallbackContext context) => { item.Act(); };
         }
 
-        //foreach (var item in SustainedBehaviourSet) {
+        //foreach (var item in SustainedBehaviourDict) {
         //    var a = behaviourInputActions[item.GetType()];
         //    var i = (TestSustainedBehaviour)item;
 
         //    item.  i.ReadValue<>();
         //}
+    }
+
+    private void Update() {
+        foreach (var item in SustainedBehaviourDict) {
+            item.Value.ActFromInput(behaviourInputActions[item.Key]);
+        }
     }
 }

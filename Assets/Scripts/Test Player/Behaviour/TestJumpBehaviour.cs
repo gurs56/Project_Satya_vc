@@ -5,11 +5,7 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
     [SerializeField]
     private TestJumpData data;
 
-    private bool readyToJump = true;
-
     #region Components
-    private CharacterController characterController;
-
     private TestLocomotionBehaviour locomotionBehaviour;
 
     private PhysicsHandler physicsHandler;
@@ -28,7 +24,6 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
     }
 
     private void Start() {
-        characterController = GetComponent<CharacterController>();
         physicsHandler = GetComponent<PhysicsHandler>();
         locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
     }

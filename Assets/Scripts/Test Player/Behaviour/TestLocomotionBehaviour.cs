@@ -24,7 +24,9 @@ public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
         return input.magnitude > 1 ? input.normalized : input;
     }
 
-    public override void Act<T>(T data) => throw new NotImplementedException();
+    public override void Act<T>(T data) {
+        print(data);
+    }
 
     //public float walkSpeed;
 
@@ -47,9 +49,9 @@ public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
     //}
 
     //private void MovePlayer() {
-    //    var input = data;
+    //    var input = inputData;
     //    moveDirection = orientation.forward * input.y + orientation.right * input.x;
-    //    float forceMultiplier = grounded ? 1f : data.airMultiplier;
+    //    float forceMultiplier = grounded ? 1f : inputData.airMultiplier;
     //    rb.AddForce(moveDirection.normalized * moveSpeed * 10f * forceMultiplier, ForceMode.Force);
     //}
 
