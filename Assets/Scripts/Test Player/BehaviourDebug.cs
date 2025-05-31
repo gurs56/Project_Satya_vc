@@ -24,7 +24,7 @@ public class BehaviourDebug : MonoBehaviour {
         Action<string, string> addToDebugString = (name, value) => { debugString += name + " " + value + "\n"; };
 
         addToDebugString.Invoke(nameof(physicsHandler.transform.position),physicsHandler.transform.position.ToString("F3"));
-        addToDebugString.Invoke(nameof(physicsHandler.velocity), physicsHandler.velocity.ToString("F3"));
+        addToDebugString.Invoke(nameof(physicsHandler.Velocity), physicsHandler.Velocity.ToString("F3"));
         addToDebugString.Invoke(nameof(physicsHandler.gravityAccel), physicsHandler.gravityAccel.ToString("F3"));
 
         textMeshPro.text = debugString;

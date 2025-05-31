@@ -13,5 +13,5 @@ public abstract class TestBehaviour : MonoBehaviour {
         Act<object>(null);
     }
 
-    public abstract void Act<T>(T data);
+    public abstract void Act<T>(T input);
 }

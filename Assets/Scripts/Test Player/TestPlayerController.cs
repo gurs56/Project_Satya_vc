@@ -23,13 +23,6 @@ public class TestPlayerController : TestController {
         foreach (var item in InstantaneousBehaviourSet) {
             behaviourInputActions[item.GetType()].performed += (InputAction.CallbackContext context) => { item.Act(); };
         }
-
-        //foreach (var item in SustainedBehaviourDict) {
-        //    var a = behaviourInputActions[item.GetType()];
-        //    var i = (TestSustainedBehaviour)item;
-
-        //    item.  i.ReadValue<>();
-        //}
     }
 
     private void Update() {

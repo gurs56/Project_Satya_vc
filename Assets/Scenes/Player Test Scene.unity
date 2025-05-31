@@ -890,7 +890,7 @@ GameObject:
   - component: {fileID: 786037706}
   - component: {fileID: 786037705}
   - component: {fileID: 786037704}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Stairs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3821,9 +3821,9 @@ GameObject:
   - component: {fileID: 1061162002}
   - component: {fileID: 1061161996}
   - component: {fileID: 1061161998}
+  - component: {fileID: 1061162000}
   - component: {fileID: 1061161997}
   - component: {fileID: 1061161999}
-  - component: {fileID: 1061162000}
   m_Layer: 0
   m_Name: TestPlayer
   m_TagString: Untagged
@@ -3909,7 +3909,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ebe6039e1a9f504fba2daa2175c8060, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  data: {fileID: 0}
+  data: {fileID: 11400000, guid: 6831d80e21dfaee498d3ab2507b6976d, type: 2}
 --- !u!143 &1061162001
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3947,10 +3947,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c295b3bf1c58b4f4da79843079713a1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultGravity: 1
+  groundedCoyoteTime: 0.5
   groundDetector: {fileID: 1002192036}
+  onFallingStart:
+    m_PersistentCalls:
+      m_Calls: []
   gravityAccel: 9.81
-  velocity: {x: 0, y: 0, z: 0}
 --- !u!1 &1403127411
 GameObject:
   m_ObjectHideFlags: 0
@@ -4669,7 +4671,7 @@ GameObject:
   - component: {fileID: 1625750846}
   - component: {fileID: 1625750845}
   - component: {fileID: 1625750844}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Torus
   m_TagString: Untagged
   m_Icon: {fileID: 0}
