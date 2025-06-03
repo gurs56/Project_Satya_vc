@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e35bf156accae84e8f4ecb3856f96fa, type: 3}
   m_Name: PlayerLocomotionData
   m_EditorClassIdentifier: 
-  speed: 2
-  airSpeed: 1
+  speed: 12
+  airSpeed: 6

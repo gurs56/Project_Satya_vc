@@ -6,13 +6,13 @@ public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
     public TestLocomotionData data;
 
     private PhysicsHandler physicsHandler;
+
+    private float speed;
+
     public override void Act(Vector2 input) {
         var normalInput = NormalizeInput(input);
 
         var orientedInput = normalInput.x * transform.right + normalInput.y * transform.forward;
-
-        //use air speed when not on ground
-        var speed = physicsHandler.IsGrounded ? data.speed : data.airSpeed;
 
         //delta time applied to velocity in physicsHandler
         physicsHandler.SetQueuedVelocity(this, orientedInput * speed);
@@ -20,6 +20,15 @@ public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
 
     private void Start() {
         physicsHandler = GetComponent<PhysicsHandler>();
+
+        Action setDefaultSpeed = () => { speed = data.speed; };
+
+        setDefaultSpeed.Invoke();
+
+        physicsHandler.onAirborneBegin.AddListener(() => { speed = data.airSpeed; });
+
+        //use air speed when not on ground
+        physicsHandler.GroundDetector.onGrounded.AddListener(() => { setDefaultSpeed.Invoke(); });
     }
 
     Vector2 NormalizeInput(Vector2 input) {

@@ -5,7 +5,7 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
     [SerializeField]
     private TestJumpData data;
 
-    private float currentCoyoteTime = 0f;
+    private bool CanJump = false;
 
     #region Components
     private TestLocomotionBehaviour locomotionBehaviour;
@@ -25,8 +25,7 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
         get { return JumpGravity * data.jumpPeakTime; }
     }
     public override void Act<T>(T data) {
-        // No need to check if grounded, coyote time will always be max if grounded. 
-        if (currentCoyoteTime > 0) {
+        if (CanJump) {
             Jump();
         }
     }
@@ -35,26 +34,17 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
         physicsHandler = GetComponent<PhysicsHandler>();
         locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
 
-        currentCoyoteTime = data.coyoteTime;
-
-        // reset coyote time when grounded
-        physicsHandler.GroundDetector.onGrounded.AddListener(() => {
-            currentCoyoteTime = data.coyoteTime;
-        });
-
         physicsHandler.onFallingStart.AddListener(() => {
             physicsHandler.gravityAccel = FallGravity;
         });
-    }
 
-
-    private void Update() {
-        if (!physicsHandler.IsGrounded && currentCoyoteTime > 0)
-            currentCoyoteTime -= Time.deltaTime;
+        physicsHandler.GroundDetector.onGrounded.AddListener(() => { CanJump = true; });
+        physicsHandler.GroundedCoyoteTime.onCoyoteTimeExpire.AddListener(() => { CanJump = false; });
     }
 
     private void Jump() {
         physicsHandler.AddJolt(new Vector3(0, JumpVelocity, 0));
         physicsHandler.gravityAccel = JumpGravity;
+        physicsHandler.GroundedCoyoteTime.IsExpired = true;
     }
 }

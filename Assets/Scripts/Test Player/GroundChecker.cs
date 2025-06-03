@@ -28,7 +28,6 @@ public class GroundDetector : MonoBehaviour {
     }
 
     private void OnTriggerEnter(Collider other) {
-        print(other.gameObject);
         IsGrounded = true;
         groundCollisions++;
     }

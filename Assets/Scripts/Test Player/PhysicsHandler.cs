@@ -4,9 +4,12 @@ using UnityEngine.Events;
 
 [RequireComponent(typeof(CharacterController))]
 public class PhysicsHandler : MonoBehaviour {
+
+    [Tooltip("The grace period where the entity is considered to not be airborne.\nSet to 0 for no coyote time.")]
     [SerializeField]
-    private float groundedCoyoteTime = .5f;
-    public float GroundedCoyoteTime { 
+    private CoyoteTime groundedCoyoteTime;
+
+    public CoyoteTime GroundedCoyoteTime {
         get => this.groundedCoyoteTime;
         private set => this.groundedCoyoteTime =  value ;
     }
@@ -18,7 +21,16 @@ public class PhysicsHandler : MonoBehaviour {
         get => this.groundDetector;
     }
 
+    /// <summary>
+    /// Invoked when <c>Velocity.y</c> switches from being >= 0 to < 0.
+    /// </summary>
     public UnityEvent onFallingStart;
+
+    /// <summary>
+    /// The deltaTime counted as in air.
+    /// Different from <c>onFallingStart</c> in that <c>onFallingStart</c> begins immediately upon falling, whereas <c>onAirborneBegin</c> begins when <c>groundedCoyoteTime</c> <= 0.
+    /// </summary>
+    public UnityEvent onAirborneBegin;
 
     [HideInInspector]
     public float gravityAccel = 1f;
@@ -35,7 +47,7 @@ public class PhysicsHandler : MonoBehaviour {
     /// <summary>
     /// Queued continuous velocity
     /// </summary>
-    private Dictionary<string, Vector3> velocityQueue = new();
+    private Dictionary<string, Vector3> velocityDict = new();
 
     /// <summary>
     /// Queued instantaneous bursts of velocity
@@ -46,20 +58,27 @@ public class PhysicsHandler : MonoBehaviour {
         get { return GroundDetector.IsGrounded; }
     }
 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         cc = GetComponent<CharacterController>();
 
         GroundDetector.onGrounded.AddListener(() => {
-            baseVelocity.y = 0;
+            baseVelocity.y = 0f;
+            groundedCoyoteTime.Reset();
         });
+
+        if (!GroundDetector.IsGrounded) { 
+            onFallingStart.Invoke();
+        }
     }
 
     // Update is called once per frame
     void Update() {
-        var v = Vector3.zero;
-        foreach (var vel in velocityQueue) {
-            v += vel.Value;
+        // Velocity that's recieved from sustained sources
+        var sustainedVelocity = Vector3.zero;
+        foreach (var vel in velocityDict) {
+            sustainedVelocity += vel.Value;
         }
 
         while (joltQueue.Count > 0)
@@ -68,7 +87,7 @@ public class PhysicsHandler : MonoBehaviour {
         if (!IsGrounded)
             Fall();
 
-        Velocity = baseVelocity + v;
+        Velocity = baseVelocity + sustainedVelocity;
 
         cc.Move(Velocity * Time.deltaTime);
 
@@ -79,7 +98,9 @@ public class PhysicsHandler : MonoBehaviour {
     }
 
     void Fall() {
-        baseVelocity.y -= gravityAccel * Time.deltaTime;
+        groundedCoyoteTime.Update();
+        if(GroundedCoyoteTime.IsExpired)
+            baseVelocity.y -= gravityAccel * Time.deltaTime;
     }
 
     public void AddJolt(Vector3 velocity) {
@@ -87,6 +108,6 @@ public class PhysicsHandler : MonoBehaviour {
     }
 
     public void SetQueuedVelocity(object key, Vector3 velocity) {
-        velocityQueue[key.ToString()] = velocity;
+        velocityDict[key.ToString()] = velocity;
     }
 }

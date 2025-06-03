@@ -16,3 +16,4 @@ MonoBehaviour:
   jumpDistance: 1
   jumpPeakTime: 0.5
   jumpFallTime: 0.25
+  coyoteTime: 3
