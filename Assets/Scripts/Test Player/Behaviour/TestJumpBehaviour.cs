@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController), typeof(TestLocomotionData), typeof(PhysicsHandler))]
+[RequireComponent(typeof(CharacterController), typeof(TestLocomotionBehaviour), typeof(PhysicsHandler))]
 public class TestJumpBehaviour : TestInstataneousBehaviour {
     [SerializeField]
     private TestJumpData data;
