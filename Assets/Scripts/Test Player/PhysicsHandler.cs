@@ -110,4 +110,8 @@ public class PhysicsHandler : MonoBehaviour {
     public void SetQueuedVelocity(object key, Vector3 velocity) {
         velocityDict[key.ToString()] = velocity;
     }
+
+    public void RemoveQueuedVelocity(object key) {
+        velocityDict.Remove(key.ToString());
+    }
 }
