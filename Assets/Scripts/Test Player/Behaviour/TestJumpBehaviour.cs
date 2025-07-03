@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController), typeof(TestLocomotionBehaviour), typeof(PhysicsHandler))]
-public class TestJumpBehaviour : TestInstataneousBehaviour {
+public class TestJumpBehaviour : ATestBehaviour<object> {
     [SerializeField]
     private TestJumpData data;
 
@@ -24,7 +24,8 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
     public float JumpVelocity {
         get { return JumpGravity * data.jumpPeakTime; }
     }
-    public override void Act<T>(T data) {
+
+    public override void Act(object data) {
         if (CanJump) {
             Jump();
         }
@@ -47,4 +48,5 @@ public class TestJumpBehaviour : TestInstataneousBehaviour {
         physicsHandler.gravityAccel = JumpGravity;
         physicsHandler.GroundedCoyoteTime.IsExpired = true;
     }
+
 }

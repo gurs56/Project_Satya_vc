@@ -7,27 +7,20 @@ using UnityEngine.InputSystem;
 public class TestPlayerController : TestController {
     PlayerInputManager input;
 
-    // Dictionarry connecting inputactions to behaviours
-    private Dictionary<Type, InputAction> behaviourInputActions = new();
+    TestLocomotionBehaviour locomotionBehaviour;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         input = GetComponent<PlayerInputManager>();
+        locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
+        TestJumpBehaviour testJumpBehaviour = GetComponent<TestJumpBehaviour>();
+        TestDashBehaviour testDashBehaviour = GetComponent<TestDashBehaviour>();
 
-        behaviourInputActions = new Dictionary<Type, InputAction> {
-            {typeof(TestJumpBehaviour), input.Player.Jump},
-            {typeof(TestDashBehaviour), input.Player.Dash},
-            {typeof(TestLocomotionBehaviour), input.Player.Move }
-        };
-
-        foreach (var item in InstantaneousBehaviourSet) {
-            behaviourInputActions[item.GetType()].performed += (InputAction.CallbackContext context) => { item.Act(); };
-        }
+        input.Player.Jump.performed += (InputAction.CallbackContext context) => { testJumpBehaviour?.Act(); } ;
+        input.Player.Dash.performed += (InputAction.CallbackContext context) => { testDashBehaviour?.Act(); };
     }
 
     private void Update() {
-        foreach (var item in SustainedBehaviourDict) {
-            item.Value.ActFromInput(behaviourInputActions[item.Key]);
-        }
+        locomotionBehaviour.Act(input.Player.Move.ReadValue<Vector2>());
     }
 }

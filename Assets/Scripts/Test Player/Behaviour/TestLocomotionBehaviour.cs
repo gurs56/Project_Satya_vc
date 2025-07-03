@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(PhysicsHandler))]
-public class TestLocomotionBehaviour : TestSustainedBehaviour<Vector2> {
+public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
     public TestLocomotionData data;
 
     private PhysicsHandler physicsHandler;

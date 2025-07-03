@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PhysicsHandler))]
-public class TestDashBehaviour : TestInstataneousBehaviour {
+public class TestDashBehaviour : ATestBehaviour<object> {
     [SerializeField]
     TestDashData dashData;
 
@@ -19,7 +19,7 @@ public class TestDashBehaviour : TestInstataneousBehaviour {
         physicsHandler = GetComponent<PhysicsHandler>();
     }
 
-    public override void Act<T>(T data) {
+    public override void Act(object data){
         setupTimer();
     }
 
