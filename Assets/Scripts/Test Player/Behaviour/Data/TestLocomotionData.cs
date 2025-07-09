@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "LocomotionData", menuName = behaviourDataDir + "LocomotionData")]
+[CreateAssetMenu(fileName = nameof(TestLocomotionData), menuName = behaviourDataDir + nameof(TestLocomotionData))]
 public class TestLocomotionData : TestBehaviourData {
     public float speed = 1f;
     [Tooltip("Speed when airbornesetDefaultSpeed")]

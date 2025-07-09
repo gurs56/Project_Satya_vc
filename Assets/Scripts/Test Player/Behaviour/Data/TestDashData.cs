@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "DashData", menuName = behaviourDataDir + "DashData")]
+[CreateAssetMenu(fileName = nameof(TestDashData), menuName = behaviourDataDir + nameof(TestDashData))]
 public class TestDashData : TestBehaviourData {
     public float dashDistance = 1.0f;
     public AnimationCurve dashCurve;

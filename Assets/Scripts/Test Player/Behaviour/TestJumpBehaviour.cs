@@ -25,7 +25,7 @@ public class TestJumpBehaviour : ATestBehaviour<object> {
         get { return JumpGravity * data.jumpPeakTime; }
     }
 
-    public override void Act(object data) {
+    public override void Act(object input) {
         if (CanJump) {
             Jump();
         }
