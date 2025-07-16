@@ -1,33 +1,43 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class BehaviourDebug : MonoBehaviour {
-    public GameObject subject;
-
     public TextMeshProUGUI textMeshPro;
 
-    private PhysicsHandler physicsHandler;
+    private string debugString = "";
 
-    private TestJumpBehaviour testJumpBehaviour;
+    private static Dictionary<string, object> data = new Dictionary<string, object>();
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start() {
-        physicsHandler = subject.GetComponent<PhysicsHandler>();
-        testJumpBehaviour = subject.GetComponent<TestJumpBehaviour>();
+    public static void addToDebugTracking(string name, ref object obj) {
+        data[name] = obj;
+    }
+
+    public static void removeFromDebugTracking(string name) {
+        data.Remove(name);
     }
 
     // Update is called once per frame
     void Update() {
-        string debugString = "";
+        Action<string, object> addToDebug = (name, obj) => {
+            Func<object, string> getStr = (obj) => obj switch {
+                Vector2 v2 => v2.ToString("F3"),
+                Vector3 v3 => v3.ToString("F3"),
+                float f => f.ToString("F3"),
+                _ => obj.ToString()
+            };
 
-        Action<string, string> addToDebugString = (name, value) => { debugString += name + " " + value + "\n"; };
+            debugString += name + " " + getStr.Invoke(obj) + "\n";
+        };
 
-        addToDebugString.Invoke(nameof(physicsHandler.transform.position),physicsHandler.transform.position.ToString("F3"));
-        addToDebugString.Invoke(nameof(physicsHandler.Velocity), physicsHandler.Velocity.ToString("F3"));
-        addToDebugString.Invoke(nameof(physicsHandler.gravityAccel), physicsHandler.gravityAccel.ToString("F3"));
-        addToDebugString.Invoke(nameof(physicsHandler.GroundedCoyoteTime.CurrentCoyoteTime), physicsHandler.GroundedCoyoteTime.CurrentCoyoteTime.ToString("F3"));
+        foreach (var tup in data) {
+          addToDebug.Invoke(tup.Key, tup.Value);
+        }
 
+      
         textMeshPro.text = debugString;
+        debugString = "";
     }
 }

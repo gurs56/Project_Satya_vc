@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 379c427ae54cf0647b45594b3ebe50e6, type: 3}
-  m_Name: PlayerRotationData
+  m_Name: PlayerFacingData
   m_EditorClassIdentifier: 
   rotationSensitivity: 1
