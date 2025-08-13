@@ -1,13 +1,14 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Dashing : MonoBehaviour
 {
     [Header("References")]
     public Transform orientation;
-    public Transform PlayerCam;
-    public tpc cam;  // Ensure this is assigned in the Inspector
+    public Transform playerCam;
     private Rigidbody rb;
-    private PlayerMove pm;  // Changed from PlayerMovementDashing to PlayerMove
+    private PlayerMove pm;
 
     [Header("Dashing")]
     public float dashForce;
@@ -15,8 +16,8 @@ public class Dashing : MonoBehaviour
     public float maxDashYSpeed;
     public float dashDuration;
 
-
     [Header("CameraEffects")]
+    public tpc cam;
     public float dashFov;
 
     [Header("Settings")]
@@ -32,17 +33,12 @@ public class Dashing : MonoBehaviour
     [Header("Input")]
     public KeyCode dashKey = KeyCode.E;
 
+    private Vector3 delayedForceToApply;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        pm = GetComponent<PlayerMove>();  // Get the PlayerMove component instead
-
-        if (rb == null)
-            Debug.LogError("Rigidbody component is missing on " + gameObject.name);
-        if (pm == null)
-            Debug.LogError("PlayerMove component is missing on " + gameObject.name);
-        if (cam == null)
-            Debug.LogWarning("PlayerCam reference is not assigned on " + gameObject.name);
+        pm = GetComponent<PlayerMove>();
     }
 
     private void Update()
@@ -59,46 +55,50 @@ public class Dashing : MonoBehaviour
         if (dashCdTimer > 0) return;
         else dashCdTimer = dashCd;
 
-        pm.dashing = true;
-        //pm.maxYSpeed = maxDashYSpeed;
+        //pm.dashing = true;
+        //pm.maxYSpeed = maxDashYSpeed; // Allow a higher vertical speed cap during dash
 
-        //cam.DoFov(dashFov);
+        // Adjust camera FOV for dash effect.
+        cam.DoFov(dashFov);
 
         Transform forwardT;
-
         if (useCameraForward)
-            forwardT = PlayerCam; /// where you're looking
+            forwardT = playerCam;
         else
-            forwardT = orientation; /// where you're facing (no up or down)
+            forwardT = orientation;
 
         Vector3 direction = GetDirection(forwardT);
-
         Vector3 forceToApply = direction * dashForce + orientation.up * dashUpwardForce;
 
         if (disableGravity)
             rb.useGravity = false;
 
         delayedForceToApply = forceToApply;
-        //Invoke(nameof(DelayedDashForce), 0.025f);
+        Invoke(nameof(DelayedDashForce), 0.025f);
 
         Invoke(nameof(ResetDash), dashDuration);
     }
-    private Vector3 delayedForceToApply;
 
-    private void DalayedDashForce()
+    private void DelayedDashForce()
     {
+        if (resetVel)
+            rb.linearVelocity = Vector3.zero;
+
         rb.AddForce(delayedForceToApply, ForceMode.Impulse);
     }
+
     private void ResetDash()
     {
-        pm.dashing = false;
-        //pm.maxYSpeed = 0;
+        //pm.dashing = false;
+        //pm.maxYSpeed = 0; // Reset vertical speed cap
 
-        //cam.DoFov(85f);
+        // Reset camera FOV to a default value (85f in this example)
+        cam.DoFov(85f);
 
         if (disableGravity)
             rb.useGravity = true;
     }
+
     private Vector3 GetDirection(Transform forwardT)
     {
         float horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -111,7 +111,7 @@ public class Dashing : MonoBehaviour
         else
             direction = forwardT.forward;
 
-        if (verticalInput == 0 && horizontalInput == 0)
+        if (horizontalInput == 0 && verticalInput == 0)
             direction = forwardT.forward;
 
         return direction.normalized;
