@@ -6,6 +6,8 @@ public class GroundDetector : MonoBehaviour {
     [SerializeField]
     private LayerMask groundLayers;
 
+    public UnityEvent onAirbourneBegin;
+
     public UnityEvent onGrounded;
 
     //the amount of ground collisions the GroundChecker detects
@@ -19,9 +21,13 @@ public class GroundDetector : MonoBehaviour {
         get => isGrounded;
         private set {
             isGrounded = value;
-            // if GroundChecker becomes gronded when it wasnt before, call onGrounded event
+            // if GroundChecker becomes grounded when it wasnt before, call onGrounded event
             if (isGrounded && !wasGrounded) {
                 onGrounded.Invoke();
+            }
+            // if GroundChecker becomes airborne when it wasnt before, call onAirbourneBegin event
+            else if (!isGrounded && wasGrounded) {
+                onAirbourneBegin.Invoke();
             }
             wasGrounded = value;
         }

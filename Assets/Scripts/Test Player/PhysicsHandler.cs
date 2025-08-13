@@ -26,12 +26,6 @@ public class PhysicsHandler : MonoBehaviour {
     /// </summary>
     public UnityEvent onFallingStart;
 
-    /// <summary>
-    /// The deltaTime counted as in air.
-    /// Different from <c>onFallingStart</c> in that <c>onFallingStart</c> begins immediately upon falling, whereas <c>onAirborneBegin</c> begins when <c>groundedCoyoteTime</c> <= 0.
-    /// </summary>
-    public UnityEvent onAirborneBegin;
-
     [HideInInspector]
     public float gravityAccel = 1f;
 

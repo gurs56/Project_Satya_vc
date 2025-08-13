@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(PhysicsHandler)/*, typeof(TestFacingBehaviour)*/)]
+[RequireComponent(typeof(PhysicsHandler))]
 public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
     public TestLocomotionData data;
 
@@ -25,13 +25,21 @@ public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
 
         setDefaultSpeed.Invoke();
 
-        physicsHandler.onAirborneBegin.AddListener(() => { speed = data.airSpeed; });
+        physicsHandler.GroundDetector.onAirbourneBegin.AddListener(() => {
+            speed = data.airSpeed; 
+        });
 
         //use air speed when not on ground
-        physicsHandler.GroundDetector.onGrounded.AddListener(() => { setDefaultSpeed.Invoke(); });
+        physicsHandler.GroundDetector.onGrounded.AddListener(() => {
+            setDefaultSpeed.Invoke();
+        });
     }
 
     Vector2 NormalizeInput(Vector2 input) {
         return input.magnitude > 1 ? input.normalized : input;
+    }
+
+    private void Update() {
+        BehaviourDebug.addToDebugTracking(nameof(speed), speed);
     }
 }
