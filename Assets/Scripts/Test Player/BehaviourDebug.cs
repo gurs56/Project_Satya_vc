@@ -11,7 +11,7 @@ public class BehaviourDebug : MonoBehaviour {
     private static Dictionary<string, object> data = new Dictionary<string, object>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public static void addToDebugTracking(string name, ref object obj) {
+    public static void addToDebugTracking(string name, object obj) {
         data[name] = obj;
     }
 

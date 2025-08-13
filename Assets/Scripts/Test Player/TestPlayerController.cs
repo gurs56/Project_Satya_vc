@@ -9,15 +9,15 @@ public class TestPlayerController : MonoBehaviour {
     PlayerInputManager input;
 
     TestLocomotionBehaviour locomotionBehaviour;
-    TestFacingBehaviour rotationBehaviour;
+    //TestFacingBehaviour rotationBehaviour;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         input = GetComponent<PlayerInputManager>();
         locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
-        rotationBehaviour = GetComponent<TestFacingBehaviour>();
+        //rotationBehaviour = GetComponent<TestFacingBehaviour>();
 
-        rotationBehaviour.normalizeInputTime = false;
+        //rotationBehaviour.normalizeInputTime = false;
 
         TestJumpBehaviour testJumpBehaviour = GetComponent<TestJumpBehaviour>();
         TestDashBehaviour testDashBehaviour = GetComponent<TestDashBehaviour>();
@@ -33,7 +33,7 @@ public class TestPlayerController : MonoBehaviour {
 
         locomotionBehaviour.Act(input.Player.Move.ReadValue<Vector2>());
         if (lookInput != null) {
-            rotationBehaviour.Act(input.Player.Look.ReadValue<Vector2>());
+            //rotationBehaviour.Act(input.Player.Look.ReadValue<Vector2>());
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(PhysicsHandler))]
+[RequireComponent(typeof(PhysicsHandler)/*, typeof(TestFacingBehaviour)*/)]
 public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
     public TestLocomotionData data;
 
