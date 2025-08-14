@@ -26,6 +26,10 @@ public class PhysicsHandler : MonoBehaviour {
     /// </summary>
     public UnityEvent onFallingStart;
 
+    public bool IsGrounded {
+        get { return GroundDetector.IsGrounded; }
+    }
+
     [HideInInspector]
     public float gravityAccel = 1f;
 
@@ -47,11 +51,6 @@ public class PhysicsHandler : MonoBehaviour {
     /// Queued instantaneous bursts of velocity
     /// </summary>
     private Queue<Vector3> joltQueue = new Queue<Vector3>();
-
-    public bool IsGrounded {
-        get { return GroundDetector.IsGrounded; }
-    }
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -107,5 +106,8 @@ public class PhysicsHandler : MonoBehaviour {
 
     public void RemoveQueuedVelocity(object key) {
         velocityDict.Remove(key.ToString());
+    }
+    public Vector3 GetVelocity(object key) {
+        return velocityDict[key.ToString()];
     }
 }

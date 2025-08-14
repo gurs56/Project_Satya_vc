@@ -2,7 +2,13 @@
 using UnityEngine;
 //using static UnityEngine.Rendering.DebugUI;
 
-public class TestFacingBehaviour : MonoBehaviour {
+[RequireComponent (typeof(TestLocomotionBehaviour))]
+public class TestFacingHandler : MonoBehaviour {
+    public Vector3 EnitiyFacingDir { get; private set; }
+
+
+    bool isDirectionRelativeToLook = false;
+    
     [SerializeField]
     private Transform rotationObject;
 
@@ -30,11 +36,23 @@ public class TestFacingBehaviour : MonoBehaviour {
     //        //FacingDirection += diff;
     //    }
 
+    private void Start() {
+        
+    }
+
     private void Update() {
+        //HandleEntityFacingDir();
         if (rotationObject) {
             var rot = transform.localEulerAngles;
             rot.y = rotationObject.localEulerAngles.y;
             transform.localEulerAngles = rot;
+        }
+    }
+
+    //Handles the
+    private void HandleEntityFacingDir() {
+        if (isDirectionRelativeToLook) {
+
         }
     }
 }

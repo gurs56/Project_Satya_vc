@@ -9,13 +9,13 @@ public class TestPlayerController : MonoBehaviour {
     PlayerInputManager input;
 
     TestLocomotionBehaviour locomotionBehaviour;
-    //TestFacingBehaviour rotationBehaviour;
+    //TestFacingHandler rotationBehaviour;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         input = GetComponent<PlayerInputManager>();
         locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
-        //rotationBehaviour = GetComponent<TestFacingBehaviour>();
+        //rotationBehaviour = GetComponent<TestFacingHandler>();
 
         //rotationBehaviour.normalizeInputTime = false;
 

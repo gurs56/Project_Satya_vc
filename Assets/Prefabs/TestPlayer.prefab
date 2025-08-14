@@ -298,6 +298,9 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 64
+  onAirbourneBegin:
+    m_PersistentCalls:
+      m_Calls: []
   onGrounded:
     m_PersistentCalls:
       m_Calls: []
@@ -362,7 +365,6 @@ GameObject:
   - component: {fileID: 9197645928237787770}
   - component: {fileID: 3065697650297634435}
   - component: {fileID: 8184021955445257577}
-  - component: {fileID: 3563699176401498748}
   - component: {fileID: 7416462141989102142}
   - component: {fileID: 5618651671475402118}
   - component: {fileID: 2311741337770379025}
@@ -438,9 +440,6 @@ MonoBehaviour:
   onFallingStart:
     m_PersistentCalls:
       m_Calls: []
-  onAirborneBegin:
-    m_PersistentCalls:
-      m_Calls: []
   gravityAccel: 9.81
 --- !u!114 &3065697650297634435
 MonoBehaviour:
@@ -466,21 +465,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea50fdab70983fe40b1f1b7f682d2b92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3563699176401498748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8988894329121820543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c31a135efae5f04a8b420e5fb8af34a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  data: {fileID: 11400000, guid: 08c439390e22f464384ffe4238e5d390, type: 2}
-  rotationObject: {fileID: 0}
-  normalizeInputTime: 0
 --- !u!114 &7416462141989102142
 MonoBehaviour:
   m_ObjectHideFlags: 0
