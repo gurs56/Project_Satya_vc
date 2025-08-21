@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 [Serializable]
 public class CoyoteTime {
-    public float defaultCoyoteTime;
+    public float setCoyoteTime;
 
     public UnityEvent onCoyoteTimeExpire;
 
@@ -12,12 +12,12 @@ public class CoyoteTime {
 
     public bool IsExpired {
         get { return CurrentCoyoteTime <= 0 || !isEnabled; }
-        set {
+        private set {
             isEnabled = !value;
             if (!isEnabled)
                 onCoyoteTimeExpire.Invoke();
             else
-                CurrentCoyoteTime = defaultCoyoteTime;
+                CurrentCoyoteTime = setCoyoteTime;
         }
     }
 
@@ -26,13 +26,18 @@ public class CoyoteTime {
     }
 
     public CoyoteTime(float defaultCoyoteTime) {
-        this.defaultCoyoteTime = defaultCoyoteTime;
+        this.setCoyoteTime = defaultCoyoteTime;
         CurrentCoyoteTime = defaultCoyoteTime;
     }
 
     public void Reset() {
         IsExpired = false;
-        CurrentCoyoteTime = defaultCoyoteTime;
+        CurrentCoyoteTime = setCoyoteTime;
+    }
+
+    public void Stop() {
+        IsExpired = true;
+        CurrentCoyoteTime = 0;
     }
 
     public void Update() {

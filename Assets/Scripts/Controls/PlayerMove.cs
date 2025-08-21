@@ -42,9 +42,9 @@ public class PlayerMove : MonoBehaviour {
             state = MovementState.dashing;
             desiredMoveSpeed = data.dashSpeed;
             speedChangeFactor = data.dashSpeedChangeFactor;
-        } else if (grounded && playerControls.Player.Sprint.IsPressed()) {
-            state = MovementState.sprinting;
-            desiredMoveSpeed = data.sprintSpeed;
+        //} else if (grounded && playerControls.Player.Sprint.IsPressed()) {
+        //    state = MovementState.sprinting;
+        //    desiredMoveSpeed = data.sprintSpeed;
         } else if (grounded) {
             state = MovementState.walking;
             desiredMoveSpeed = data.walkSpeed;

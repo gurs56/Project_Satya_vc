@@ -5,16 +5,12 @@ using UnityEngine;
 public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
     public TestLocomotionData data;
 
-    //private Vector3 forward = Vector3.forward;
-
     private PhysicsHandler physicsHandler;
 
     private float speed;
 
     public override void Act(Vector2 input) {
         var normalInput = NormalizeInput(input);
-
-        //var right = Vector3.Cross(transform.up, forward);
 
         var orientedInput = normalInput.x * transform.right + normalInput.y * transform.forward;
 
@@ -29,7 +25,7 @@ public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
 
         setDefaultSpeed.Invoke();
 
-        physicsHandler.GroundDetector.onAirbourneBegin.AddListener(() => {
+        physicsHandler.onAirbourneBegin.AddListener(() => {
             speed = data.airSpeed;
         });
 
@@ -43,7 +39,8 @@ public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
         return input.magnitude > 1 ? input.normalized : input;
     }
 
-    //private void Update() {
-    //    BehaviourDebug.addToDebugTracking(nameof(speed), speed);
-    //}
+    private void Update() {
+        BehaviourDebug.addToDebugTracking(nameof(physicsHandler.Velocity), new Vector2(physicsHandler.Velocity.x, physicsHandler.Velocity.z).magnitude);
+        BehaviourDebug.addToDebugTracking(nameof(speed), speed);
+    }
 }

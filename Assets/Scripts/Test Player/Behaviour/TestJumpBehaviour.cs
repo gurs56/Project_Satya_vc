@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController), typeof(TestLocomotionBehaviour), typeof(PhysicsHandler))]
-public class TestJumpBehaviour : ATestBehaviour<object> {
+public class TestJumpBehaviour : MonoBehaviour {
     [SerializeField]
     private TestJumpData data;
 
@@ -13,19 +13,30 @@ public class TestJumpBehaviour : ATestBehaviour<object> {
     private PhysicsHandler physicsHandler;
     #endregion
 
+    public float JumpDuration {
+        get {
+            return data.jumpDistance/ locomotionBehaviour.data.airSpeed;
+        }
+    }
+
     public float JumpGravity {
-        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(data.jumpPeakTime, 2); }
+        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(JumpDuration * data.jumpPeakProportion, 2); }
     }
 
     public float FallGravity {
-        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(data.jumpFallTime, 2); }
+        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(JumpDuration * ( 1 - data.jumpPeakProportion ), 2); }
     }
 
     public float JumpVelocity {
-        get { return JumpGravity * data.jumpPeakTime; }
+        get { return JumpGravity * JumpDuration / 2; }
     }
 
-    public override void Act(object input) {
+    private Vector3 startJumpPos = Vector3.zero;
+
+    private float jumpDist = 0;
+    private float jumpHeight = 0;
+
+    public void Act() {
         if (CanJump) {
             Jump();
         }
@@ -39,14 +50,34 @@ public class TestJumpBehaviour : ATestBehaviour<object> {
             physicsHandler.gravityAccel = FallGravity;
         });
 
-        physicsHandler.GroundDetector.onGrounded.AddListener(() => { CanJump = true; });
-        physicsHandler.GroundedCoyoteTime.onCoyoteTimeExpire.AddListener(() => { CanJump = false; });
+        physicsHandler.GroundDetector.onGrounded.AddListener(() => {
+            CanJump = true;
+
+            jumpDist = ( new Vector2(transform.position.x, transform.position.z) - new Vector2(startJumpPos.x, startJumpPos.z) ).magnitude;
+        });
+
+        physicsHandler.onAirbourneBegin.AddListener(() => {
+            CanJump = false;
+        });
+
+        physicsHandler.onFallingStart.AddListener(() => {
+            jumpHeight = transform.position.y - startJumpPos.y;
+        });
     }
 
     private void Jump() {
         physicsHandler.AddJolt(new Vector3(0, JumpVelocity, 0));
         physicsHandler.gravityAccel = JumpGravity;
-        physicsHandler.GroundedCoyoteTime.IsExpired = true;
+
+        physicsHandler.GroundedCoyoteTime.Stop();
+        physicsHandler.startCoyoteTime = false;
+
+        startJumpPos = transform.position;
     }
 
+    private void Update() {
+        BehaviourDebug.addToDebugTracking(nameof(JumpDuration), JumpDuration);
+        BehaviourDebug.addToDebugTracking(nameof(jumpHeight), jumpHeight);
+        BehaviourDebug.addToDebugTracking(nameof(jumpDist), jumpDist);
+    }
 }

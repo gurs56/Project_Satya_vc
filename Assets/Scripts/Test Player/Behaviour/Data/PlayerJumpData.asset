@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: PlayerJumpData
   m_EditorClassIdentifier: 
   jumpHeight: 5
-  jumpDistance: 1
-  jumpPeakTime: 0.5
-  jumpFallTime: 0.25
-  coyoteTime: 3
+  jumpDistance: 7
+  jumpDuration: 1
+  jumpPeakProportion: 0.5

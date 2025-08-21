@@ -50,8 +50,6 @@ public class GroundDetector : MonoBehaviour {
         var groundCollider = GetComponent<Collider>();
         var rb = GetComponent<Rigidbody>();
 
-        //var inverseLayermask = ~groundLayers ;
-
         rb.includeLayers = groundCollider.includeLayers = groundLayers;
         rb.excludeLayers = groundCollider.excludeLayers = ~groundLayers;
 
