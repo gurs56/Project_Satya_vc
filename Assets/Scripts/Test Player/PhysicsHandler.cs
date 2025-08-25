@@ -8,16 +8,12 @@ public class PhysicsHandler : MonoBehaviour {
     #region Inspector Variables
     [Tooltip("The grace period where the entity is considered to not be airborne.\nSet to 0 for no coyote time.")]
     [SerializeField]
-    private CoyoteTime groundedCoyoteTime;
+    private Timer groundedCoyoteTime;
 
-    public CoyoteTime GroundedCoyoteTime {
+    public Timer GroundedCoyoteTime {
         get => this.groundedCoyoteTime;
         private set => this.groundedCoyoteTime = value;
     }
-    /// <summary>
-    /// Whether to reset <c>GroundedCoyoteTime</c> when the entity next leaves the ground.
-    /// </summary>
-    public bool startCoyoteTime = true;
 
     [SerializeField]
     private GroundDetector groundDetector;
@@ -25,6 +21,7 @@ public class PhysicsHandler : MonoBehaviour {
     public GroundDetector GroundDetector {
         get => this.groundDetector;
     }
+
     /// <summary>
     /// <para>Invoked when the entity becomes airborne after being grounded.</para>
     /// <para>Counts <c>GroundedCoyoteTime</c> as being grounded. Use <c>GroundDetector.onAirbourneBegin</c> to ignore <c>GroundedCoyoteTime</c>.</para>
@@ -62,6 +59,13 @@ public class PhysicsHandler : MonoBehaviour {
     private Queue<Vector3> joltQueue = new Queue<Vector3>();
     #endregion
 
+    /// <summary>
+    /// <para>Whether to reset <c>GroundedCoyoteTime</c> when the entity next leaves the ground.</para>
+    /// Resets upon becoming <c>IsGrounded</c>
+    /// </summary>
+    [HideInInspector]
+    public bool startCoyoteTime = true;
+
     private StepDownHelper stepDownHelper;
 
     public bool IsGrounded {
@@ -90,7 +94,8 @@ public class PhysicsHandler : MonoBehaviour {
         });
 
         GroundDetector.onAirbourneBegin.AddListener(() => {
-            if (stepDownHelper.IsWithinTreshold) {
+            RaycastHit raycastHit;
+            if (stepDownHelper.IsWithinTreshold(out raycastHit)) {
                 startCoyoteTime = false;
             }
 
@@ -101,7 +106,7 @@ public class PhysicsHandler : MonoBehaviour {
             }
         });
 
-        GroundedCoyoteTime.onCoyoteTimeExpire.AddListener(() => {
+        GroundedCoyoteTime.onExpire.AddListener((float overtime) => {
             if (!IsGrounded) {
                 onAirbourneBegin.Invoke();
             }
@@ -123,10 +128,8 @@ public class PhysicsHandler : MonoBehaviour {
         while (joltQueue.Count > 0)
             baseVelocity += joltQueue.Dequeue();
 
-        GroundedCoyoteTime.Update();
-
         BehaviourDebug.addToDebugTracking(nameof(GroundedCoyoteTime.IsExpired), GroundedCoyoteTime.IsExpired);
-        BehaviourDebug.addToDebugTracking(nameof(GroundedCoyoteTime.CurrentCoyoteTime), GroundedCoyoteTime.CurrentCoyoteTime);
+        BehaviourDebug.addToDebugTracking(nameof(GroundedCoyoteTime.CurrentTime), GroundedCoyoteTime.CurrentTime);
 
         if (!IsGrounded)
             Fall();
@@ -142,7 +145,6 @@ public class PhysicsHandler : MonoBehaviour {
     }
 
     void Fall() {
-        groundedCoyoteTime.Update();
         if (GroundedCoyoteTime.IsExpired)
             baseVelocity.y -= gravityAccel * Time.deltaTime;
     }

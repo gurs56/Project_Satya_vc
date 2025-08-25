@@ -7,10 +7,8 @@ public class StepDownHelper : MonoBehaviour {
 
     private CharacterController characterController;
 
-    public bool IsWithinTreshold {
-        get {
-            return Physics.Raycast(transform.position, Vector3.down, characterController.stepOffset, groundLayers);
-        }
+    public bool IsWithinTreshold(out RaycastHit hitInfo) { 
+        return Physics.Raycast(new Ray(transform.position, Vector3.down), out hitInfo, characterController.stepOffset, groundLayers);
     }
 
     private void Start() {
@@ -18,10 +16,8 @@ public class StepDownHelper : MonoBehaviour {
     }
 
     private void OnDrawGizmosSelected() {
-
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, Vector3.down * characterController.stepOffset);
-
         Gizmos.color = Color.white;
     }
 }

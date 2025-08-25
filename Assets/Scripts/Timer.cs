@@ -2,46 +2,60 @@ using UnityEngine;
 using UnityEngine.Events;
 
 public class Timer : MonoBehaviour {
-    public float maxTime = 1f;
+    /// <summary>
+    /// The time the timer will be set to when started
+    /// </summary>
+    public float setTime;
 
-    public bool deleteOnTimeout = true;
+    public UnityEvent onTick;
 
-    public UnityEvent onTimeout;
+    /// <summary>
+    /// <return>Returns the amount of time it's overshot.</return>
+    /// </summary>
+    public UnityEvent<float> onExpire;
 
-    public UnityEvent<float> onTick;
+    public bool IsExpired {
+        get { return CurrentTime <= 0; }
 
-    public float currentTime { get; private set; } = 0f;
-
-    public void StartTimer() {
-        currentTime = maxTime;
+        private set {
+            if (value) {
+                CurrentTime = 0;
+                onExpire.Invoke(CurrentTime);
+            } else
+                CurrentTime = setTime;
+        }
     }
 
-    // Update is called once per frame
-    void Update() {
-        var trueDelta = Time.deltaTime;
+    public float CurrentTime {
+        get; private set;
+    }
 
-        bool queueTimeout = false;
-        bool queueTick = false;
-        if (currentTime > 0) {
-            var tempCurrentTime = currentTime - Time.deltaTime;
+    public void SetTime(float setTime) {
+        this.setTime = setTime;
+        CurrentTime = setTime;
+    }
 
-            // get diff between when timer should have ended and when it actually did
-            if (tempCurrentTime < 0) {
-                trueDelta = Time.deltaTime + tempCurrentTime;
-                queueTimeout = true;
-            }
+    public void Reset() {
+        IsExpired = false;
+        CurrentTime = setTime;
+    }
 
-            currentTime -= trueDelta;
-            queueTick = true;
-        } else if (queueTimeout) {
-            onTimeout.Invoke();
-            if (deleteOnTimeout) {
-                Destroy(this);
-            }
-        }
+    /// <summary>
+    /// Sets the timer to expired
+    /// </summary>
+    public void Stop() {
+        IsExpired = true;
+    }
 
-        if (queueTick) { 
-            onTick.Invoke(trueDelta);
+    private void Update() {
+        if (!IsExpired) {
+            CurrentTime -= Time.deltaTime;
+
+            onTick.Invoke();
+
+            // if coyote time expired this frame
+            if (CurrentTime <= 0)
+                onExpire.Invoke(CurrentTime);
         }
     }
 }

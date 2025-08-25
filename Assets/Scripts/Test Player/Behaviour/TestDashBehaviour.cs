@@ -1,13 +1,16 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(PhysicsHandler))]
-public class TestDashBehaviour : ATestBehaviour<object> {
+public class TestDashBehaviour : MonoBehaviour {
     [SerializeField]
     TestDashData dashData;
 
+    [SerializeField]
+    Timer timer;
+
     PhysicsHandler physicsHandler;
 
-    Timer timer;
 
     float currentSpeedMultiplier = 0;
 
@@ -15,24 +18,20 @@ public class TestDashBehaviour : ATestBehaviour<object> {
         return 1.0f;
     }
 
+    public void Act() {
+        timer.Reset();
+    }
+
     private void Start() {
         physicsHandler = GetComponent<PhysicsHandler>();
-    }
 
-    public override void Act(object data){
-        setupTimer();
-    }
-
-    void setupTimer() {
-        timer = gameObject.AddComponent<Timer>();
-        timer.maxTime = dashData.dashCurve.length;
-        timer.deleteOnTimeout = true;
-        timer.onTick.AddListener(OnTimerTick);
-        timer.onTimeout.AddListener(OnTimerTimeout);
+        //Setup timer
+        timer.SetTime(dashData.dashCurve.length);
+        timer.onExpire.AddListener(OnTimerTimeout);
     }
 
     void OnTimerTick(float delta) {
-        currentSpeedMultiplier = dashData.dashCurve.Evaluate(timer.currentTime);
+        currentSpeedMultiplier = dashData.dashCurve.Evaluate(timer.CurrentTime);
     }
 
     private void Update() {
@@ -41,7 +40,7 @@ public class TestDashBehaviour : ATestBehaviour<object> {
         }
     }
 
-    void OnTimerTimeout() {
+    void OnTimerTimeout(float overtime) {
         physicsHandler.RemoveQueuedVelocity(this);
     }
 }
