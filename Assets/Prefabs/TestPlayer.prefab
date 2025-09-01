@@ -121,7 +121,6 @@ GameObject:
   - component: {fileID: 1637607116306143930}
   - component: {fileID: 6818957483916502693}
   - component: {fileID: 5228948980455458418}
-  - component: {fileID: 3813399112262271594}
   m_Layer: 0
   m_Name: Capsule
   m_TagString: Player
@@ -245,21 +244,109 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3813399112262271594
+--- !u!1 &3908917481912928124
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2738888627266955719}
+  - component: {fileID: 4031917531871463879}
+  - component: {fileID: 3426212207236876670}
+  - component: {fileID: 1686949755979156614}
+  m_Layer: 0
+  m_Name: CeilingChecker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2738888627266955719
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3908917481912928124}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5599669688341921899}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4031917531871463879
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2608596478374893480}
+  m_GameObject: {fileID: 3908917481912928124}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe63d5570ed8f5c4fa58a31eaa90fd5b, type: 3}
+  m_Script: {fileID: 11500000, guid: 0511dd43daa24644aa77c32ae0b45ac7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundLayers:
+  collisionLayers:
     serializedVersion: 2
     m_Bits: 64
+  onExitAllColisions:
+    m_PersistentCalls:
+      m_Calls: []
+  onStartColliding:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!135 &3426212207236876670
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3908917481912928124}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &1686949755979156614
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3908917481912928124}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 2
 --- !u!1 &5099370760112326557
 GameObject:
   m_ObjectHideFlags: 0
@@ -337,13 +424,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0511dd43daa24644aa77c32ae0b45ac7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundLayers:
+  collisionLayers:
     serializedVersion: 2
     m_Bits: 64
-  onAirbourneBegin:
+  onExitAllColisions:
     m_PersistentCalls:
       m_Calls: []
-  onGrounded:
+  onStartColliding:
     m_PersistentCalls:
       m_Calls: []
 --- !u!135 &644334366556264246
@@ -406,6 +493,7 @@ GameObject:
   - component: {fileID: 4769116687490371281}
   - component: {fileID: 9197645928237787770}
   - component: {fileID: 6482271786149763845}
+  - component: {fileID: 5930711568854988318}
   - component: {fileID: 7440781591186035151}
   - component: {fileID: 3065697650297634435}
   - component: {fileID: 8184021955445257577}
@@ -413,7 +501,6 @@ GameObject:
   - component: {fileID: 5618651671475402118}
   - component: {fileID: 2311741337770379025}
   - component: {fileID: 6243336649013094877}
-  - component: {fileID: 2413250199747575884}
   m_Layer: 0
   m_Name: TestPlayer
   m_TagString: Player
@@ -436,6 +523,7 @@ Transform:
   m_Children:
   - {fileID: 1184004838657718387}
   - {fileID: 6749886663555981238}
+  - {fileID: 2738888627266955719}
   - {fileID: 817189289571560235}
   - {fileID: 1841235057918479084}
   m_Father: {fileID: 0}
@@ -479,6 +567,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundedCoyoteTime: {fileID: 6482271786149763845}
   groundDetector: {fileID: 4421256083645064037}
+  ceilingDetector: {fileID: 4031917531871463879}
   onAirbourneBegin:
     m_PersistentCalls:
       m_Calls: []
@@ -499,13 +588,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90e60524fabe89e48bc9bf3fbc333c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  setTime: 0.25
+  setTime: 0.15
   onTick:
     m_PersistentCalls:
       m_Calls: []
   onExpire:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5930711568854988318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8988894329121820543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09ce16a77b81f2c4798e133cb69033ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stepHelper:
+    groundLayers:
+      serializedVersion: 2
+      m_Bits: 64
+    downVelocity: 5
 --- !u!114 &7440781591186035151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,18 +708,3 @@ MonoBehaviour:
   onExpire:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2413250199747575884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8988894329121820543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe63d5570ed8f5c4fa58a31eaa90fd5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  groundLayers:
-    serializedVersion: 2
-    m_Bits: 64

@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(CharacterController))]
 public class PhysicsHandler : MonoBehaviour {
@@ -16,22 +15,39 @@ public class PhysicsHandler : MonoBehaviour {
     }
 
     [SerializeField]
-    private GroundDetector groundDetector;
+    private EventTrigger groundDetector;
 
-    public GroundDetector GroundDetector {
+    public EventTrigger GroundDetector {
         get => this.groundDetector;
+    }
+
+    [SerializeField]
+    private EventTrigger ceilingDetector;
+
+    public EventTrigger CeilingDetector {
+        get => ceilingDetector;
+    }
+
+    #region Events
+    public UnityEvent onHeadBump {
+        get => CeilingDetector.onStartColliding;
+    }
+
+    public UnityEvent onGrounded {
+        get => GroundDetector.onStartColliding;
     }
 
     /// <summary>
     /// <para>Invoked when the entity becomes airborne after being grounded.</para>
-    /// <para>Counts <c>GroundedCoyoteTime</c> as being grounded. Use <c>GroundDetector.onAirbourneBegin</c> to ignore <c>GroundedCoyoteTime</c>.</para>
+    /// <para>Counts <c>GroundedCoyoteTime</c> as being grounded. Use <c>EventTrigger.onExitAllColisions</c> to ignore <c>GroundedCoyoteTime</c>.</para>
     /// </summary>
     public UnityEvent onAirbourneBegin;
 
     /// <summary>
-    /// Invoked when <c>Velocity.y</c> switches from being >= 0 to < 0.
+    /// Invoked when <c>Velocity.y</c> switches from being >= 0 to < 0 while <c>IsAirbourne</c>.
     /// </summary>
     public UnityEvent onFallingStart;
+    #endregion
 
     #endregion
 
@@ -61,25 +77,26 @@ public class PhysicsHandler : MonoBehaviour {
 
     /// <summary>
     /// <para>Whether to reset <c>GroundedCoyoteTime</c> when the entity next leaves the ground.</para>
-    /// Resets upon becoming <c>IsGrounded</c>
+    /// Resets upon becoming <c>IsColliding</c>
     /// </summary>
     [HideInInspector]
     public bool startCoyoteTime = true;
 
-    private StepDownHelper stepDownHelper;
-
     public bool IsGrounded {
-        get { return GroundDetector.IsGrounded; }
-    }
+        get;
+        private set;
+    } = false;
 
+    public bool IsAirbourne {
+        get { return !IsGrounded; }
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         cc = GetComponent<CharacterController>();
-        stepDownHelper = GetComponent<StepDownHelper>();
 
         var groundDetectorCollider = GroundDetector.GetComponent<SphereCollider>();
 
-        GroundDetector.onGrounded.AddListener(() => {
+        onGrounded.AddListener(() => {
             baseVelocity.y = 0f;
 
             var groundDetectorBottom = groundDetector.transform.position.y - groundDetectorCollider.radius;
@@ -91,28 +108,29 @@ public class PhysicsHandler : MonoBehaviour {
 
             GroundedCoyoteTime.Stop();
             startCoyoteTime = true;
+            IsGrounded = true;
         });
 
-        GroundDetector.onAirbourneBegin.AddListener(() => {
-            RaycastHit raycastHit;
-            if (stepDownHelper.IsWithinTreshold(out raycastHit)) {
-                startCoyoteTime = false;
-            }
-
-            if(startCoyoteTime)
+        GroundDetector.onExitAllColisions.AddListener(() => {
+            if (startCoyoteTime) {
                 GroundedCoyoteTime.Reset();
-            else {
+
+            } else {
                 onAirbourneBegin.Invoke();
             }
         });
 
         GroundedCoyoteTime.onExpire.AddListener((float overtime) => {
-            if (!IsGrounded) {
+            if (!GroundDetector.IsColliding) {
                 onAirbourneBegin.Invoke();
             }
         });
 
-        if (!GroundDetector.IsGrounded) {
+        onAirbourneBegin.AddListener(() => {
+            IsGrounded = false;
+        });
+
+        if (!GroundDetector.IsColliding) {
             onFallingStart.Invoke();
         }
     }
@@ -128,41 +146,57 @@ public class PhysicsHandler : MonoBehaviour {
         while (joltQueue.Count > 0)
             baseVelocity += joltQueue.Dequeue();
 
-        BehaviourDebug.addToDebugTracking(nameof(GroundedCoyoteTime.IsExpired), GroundedCoyoteTime.IsExpired);
-        BehaviourDebug.addToDebugTracking(nameof(GroundedCoyoteTime.CurrentTime), GroundedCoyoteTime.CurrentTime);
-
-        if (!IsGrounded)
-            Fall();
+#if UNITY_EDITOR
+        DoDebug();
+#endif
+        TryFalling();
 
         Velocity = baseVelocity + sustainedVelocity;
 
         cc.Move(Velocity * Time.deltaTime);
 
-        if (Velocity.y <= 0f && OldVelocity.y > 0)
+        // if velocity becomes negative and the entity is airbourne, count as falling
+        if (Velocity.y <= 0f && OldVelocity.y > 0 && IsAirbourne)
             onFallingStart.Invoke();
 
         OldVelocity = Velocity;
     }
 
-    void Fall() {
-        if (GroundedCoyoteTime.IsExpired)
+    void TryFalling() {
+        if (GroundedCoyoteTime.IsExpired && !IsGrounded)
             baseVelocity.y -= gravityAccel * Time.deltaTime;
     }
 
+    #region Velocity Exposers
     public void AddJolt(Vector3 velocity) {
         joltQueue.Enqueue(velocity);
     }
 
-    #region Getters and Setters
     public void SetQueuedVelocity(object key, Vector3 velocity) {
         velocityDict[key.ToString()] = velocity;
     }
 
-    public void RemoveQueuedVelocity(object key) {
-        velocityDict.Remove(key.ToString());
+    public void RemoveQueuedVelocity(object key, bool warnIfNull = true) {
+        if (velocityDict.ContainsKey(key.ToString()))
+            velocityDict.Remove(key.ToString());
+
+        if (warnIfNull)
+            Debug.LogWarning($"No such key \"{key.ToString()}\" in queued velocity.");
     }
-    public Vector3 GetVelocity(object key) {
-        return velocityDict[key.ToString()];
+    public Vector3? GetVelocity(object key) {
+        if (velocityDict.ContainsKey(key.ToString()))
+            return velocityDict[key.ToString()];
+        return null;
     }
+    #endregion
+
+    #region Debugging
+#if UNITY_EDITOR
+    private void DoDebug() {
+        BehaviourDebug.addToDebugTracking(nameof(IsGrounded), IsGrounded);
+        BehaviourDebug.addToDebugTracking(nameof(GroundedCoyoteTime.IsExpired), GroundedCoyoteTime.IsExpired);
+        BehaviourDebug.addToDebugTracking(nameof(GroundedCoyoteTime.CurrentTime), GroundedCoyoteTime.CurrentTime);
+    }
+#endif
     #endregion
 }

@@ -5,7 +5,7 @@ public class TestJumpBehaviour : MonoBehaviour {
     [SerializeField]
     private TestJumpData data;
 
-    private bool CanJump = false;
+    private bool canJump = false;
 
     #region Components
     private TestLocomotionBehaviour locomotionBehaviour;
@@ -15,29 +15,51 @@ public class TestJumpBehaviour : MonoBehaviour {
 
     public float JumpDuration {
         get {
-            return data.jumpDistance/ locomotionBehaviour.data.airSpeed;
+            return data.jumpDistance / locomotionBehaviour.data.airSpeed;
         }
     }
 
+    private bool IsGravityLessOrEqZero(out float value) {
+        value = -1;
+        if (JumpDuration <= 0 || data.jumpPeakProportion <= 0) {
+            value = 0;
+            return true;
+        }
+
+        return false;
+    }
+
     public float JumpGravity {
-        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(JumpDuration * data.jumpPeakProportion, 2); }
+        get {
+            if (IsGravityLessOrEqZero(out var grav))
+                return grav;
+
+            return ( 2 * data.jumpHeight ) / Mathf.Pow(JumpDuration * data.jumpPeakProportion, 2);
+        }
     }
 
     public float FallGravity {
-        get { return ( 2 * data.jumpHeight ) / Mathf.Pow(JumpDuration * ( 1 - data.jumpPeakProportion ), 2); }
+        get {
+            if (IsGravityLessOrEqZero(out var grav))
+                return grav;
+
+            return ( 2 * data.jumpHeight ) / Mathf.Pow(JumpDuration * ( 1 - data.jumpPeakProportion ), 2);
+        }
     }
 
     public float JumpVelocity {
         get { return JumpGravity * JumpDuration / 2; }
     }
 
-    private Vector3 startJumpPos = Vector3.zero;
+    #region Tracking Variables
+    public Vector3 startJumpPos { get; private set; } = Vector3.zero;
 
-    private float jumpDist = 0;
-    private float jumpHeight = 0;
+    public float jumpDist { get; private set; } = 0;
+    public float jumpHeight { get; private set; } = 0;
+    #endregion
 
     public void Act() {
-        if (CanJump) {
+        if (canJump && !physicsHandler.CeilingDetector.IsColliding) {
             Jump();
         }
     }
@@ -48,21 +70,22 @@ public class TestJumpBehaviour : MonoBehaviour {
 
         physicsHandler.onFallingStart.AddListener(() => {
             physicsHandler.gravityAccel = FallGravity;
+
+            jumpHeight = transform.position.y - startJumpPos.y;
         });
 
-        physicsHandler.GroundDetector.onGrounded.AddListener(() => {
-            CanJump = true;
+        physicsHandler.GroundDetector.onStartColliding.AddListener(() => {
+            canJump = true;
 
             jumpDist = ( new Vector2(transform.position.x, transform.position.z) - new Vector2(startJumpPos.x, startJumpPos.z) ).magnitude;
+
         });
 
         physicsHandler.onAirbourneBegin.AddListener(() => {
-            CanJump = false;
+            canJump = false;
         });
 
-        physicsHandler.onFallingStart.AddListener(() => {
-            jumpHeight = transform.position.y - startJumpPos.y;
-        });
+
     }
 
     private void Jump() {
@@ -75,9 +98,11 @@ public class TestJumpBehaviour : MonoBehaviour {
         startJumpPos = transform.position;
     }
 
-    private void Update() {
-        BehaviourDebug.addToDebugTracking(nameof(JumpDuration), JumpDuration);
-        BehaviourDebug.addToDebugTracking(nameof(jumpHeight), jumpHeight);
-        BehaviourDebug.addToDebugTracking(nameof(jumpDist), jumpDist);
-    }
+//    private void Update() {
+//#if UNITY_EDITOR
+//        BehaviourDebug.addToDebugTracking(nameof(JumpDuration), JumpDuration);
+//        BehaviourDebug.addToDebugTracking(nameof(jumpHeight), jumpHeight);
+//        BehaviourDebug.addToDebugTracking(nameof(jumpDist), jumpDist);
+//#endif
+//    }
 }

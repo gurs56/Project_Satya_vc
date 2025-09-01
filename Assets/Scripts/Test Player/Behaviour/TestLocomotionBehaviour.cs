@@ -30,7 +30,7 @@ public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
         });
 
         //use air speed when not on ground
-        physicsHandler.GroundDetector.onGrounded.AddListener(() => {
+        physicsHandler.GroundDetector.onStartColliding.AddListener(() => {
             setDefaultSpeed.Invoke();
         });
     }
@@ -40,7 +40,7 @@ public class TestLocomotionBehaviour : ATestBehaviour<Vector2> {
     }
 
     private void Update() {
-        BehaviourDebug.addToDebugTracking(nameof(physicsHandler.Velocity), new Vector2(physicsHandler.Velocity.x, physicsHandler.Velocity.z).magnitude);
+        BehaviourDebug.addToDebugTracking(nameof(physicsHandler.Velocity), physicsHandler.Velocity);
         BehaviourDebug.addToDebugTracking(nameof(speed), speed);
     }
 }
