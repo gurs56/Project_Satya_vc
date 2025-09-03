@@ -2,8 +2,8 @@
 using UnityEngine;
 //using static UnityEngine.Rendering.DebugUI;
 
-[RequireComponent (typeof(TestLocomotionBehaviour))]
-public class TestFacingHandler : MonoBehaviour {
+[RequireComponent (typeof(LocomotionBehaviour))]
+public class FacingHandler : MonoBehaviour {
     public Vector3 EnitiyFacingDir { get; private set; }
 
 

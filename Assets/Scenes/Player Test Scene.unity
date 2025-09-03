@@ -20569,33 +20569,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5930711568854988318, guid: de841272c3aee8c4896435200b6da3e3, type: 3}
-      propertyPath: stepHelper.downVelocity
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 5930711568854988318, guid: de841272c3aee8c4896435200b6da3e3, type: 3}
-      propertyPath: stepHelper.groundLayers.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 6482271786149763845, guid: de841272c3aee8c4896435200b6da3e3, type: 3}
-      propertyPath: setTime
-      value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 6482271786149763845, guid: de841272c3aee8c4896435200b6da3e3, type: 3}
-      propertyPath: onExpire.m_PersistentCalls.m_Calls.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6482271786149763845, guid: de841272c3aee8c4896435200b6da3e3, type: 3}
-      propertyPath: onExpire.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 7440781591186035151, guid: de841272c3aee8c4896435200b6da3e3, type: 3}
       propertyPath: rotationObject
       value: 
       objectReference: {fileID: 1611136725}
     - target: {fileID: 8988894329121820543, guid: de841272c3aee8c4896435200b6da3e3, type: 3}
       propertyPath: m_Name
-      value: TestPlayer
+      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

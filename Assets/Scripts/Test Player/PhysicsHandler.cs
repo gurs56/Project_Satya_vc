@@ -153,6 +153,10 @@ public class PhysicsHandler : MonoBehaviour {
 
         Velocity = baseVelocity + sustainedVelocity;
 
+        if(new Vector2(Velocity.x, Velocity.z).magnitude == 0) {
+            GroundedCoyoteTime.Stop();
+        }
+
         cc.Move(Velocity * Time.deltaTime);
 
         // if velocity becomes negative and the entity is airbourne, count as falling

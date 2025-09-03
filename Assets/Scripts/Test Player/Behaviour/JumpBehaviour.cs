@@ -1,14 +1,14 @@
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController), typeof(TestLocomotionBehaviour), typeof(PhysicsHandler))]
-public class TestJumpBehaviour : MonoBehaviour {
+[RequireComponent(typeof(CharacterController), typeof(LocomotionBehaviour), typeof(PhysicsHandler))]
+public class JumpBehaviour : MonoBehaviour {
     [SerializeField]
-    private TestJumpData data;
+    private JumpData data;
 
     private bool canJump = false;
 
     #region Components
-    private TestLocomotionBehaviour locomotionBehaviour;
+    private LocomotionBehaviour locomotionBehaviour;
 
     private PhysicsHandler physicsHandler;
     #endregion
@@ -66,7 +66,7 @@ public class TestJumpBehaviour : MonoBehaviour {
 
     private void Start() {
         physicsHandler = GetComponent<PhysicsHandler>();
-        locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
+        locomotionBehaviour = GetComponent<LocomotionBehaviour>();
 
         physicsHandler.onFallingStart.AddListener(() => {
             physicsHandler.gravityAccel = FallGravity;

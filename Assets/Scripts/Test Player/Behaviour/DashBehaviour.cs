@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PhysicsHandler))]
-public class TestDashBehaviour : MonoBehaviour {
+public class DashBehaviour : MonoBehaviour {
     [SerializeField]
-    TestDashData dashData;
+    DashData dashData;
 
     [SerializeField]
     Timer timer;
@@ -12,10 +12,6 @@ public class TestDashBehaviour : MonoBehaviour {
 
 
     float currentSpeedMultiplier = 0;
-
-    private float GetDashSpeedMultiplier() {
-        return 1.0f;
-    }
 
     public void Act() {
         timer.Reset();

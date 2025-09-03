@@ -5,22 +5,22 @@ using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 
 [RequireComponent(typeof(PlayerInputManager))]
-public class TestPlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
     PlayerInputManager input;
 
-    TestLocomotionBehaviour locomotionBehaviour;
-    //TestFacingHandler rotationBehaviour;
+    LocomotionBehaviour locomotionBehaviour;
+    //FacingHandler rotationBehaviour;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         input = GetComponent<PlayerInputManager>();
-        locomotionBehaviour = GetComponent<TestLocomotionBehaviour>();
-        //rotationBehaviour = GetComponent<TestFacingHandler>();
+        locomotionBehaviour = GetComponent<LocomotionBehaviour>();
+        //rotationBehaviour = GetComponent<FacingHandler>();
 
         //rotationBehaviour.normalizeInputTime = false;
 
-        TestJumpBehaviour testJumpBehaviour = GetComponent<TestJumpBehaviour>();
-        TestDashBehaviour testDashBehaviour = GetComponent<TestDashBehaviour>();
+        JumpBehaviour testJumpBehaviour = GetComponent<JumpBehaviour>();
+        DashBehaviour testDashBehaviour = GetComponent<DashBehaviour>();
 
         input.Player.Jump.performed += (InputAction.CallbackContext context) => { testJumpBehaviour?.Act(); } ;
         input.Player.Dash.performed += (InputAction.CallbackContext context) => { testDashBehaviour?.Act(); };

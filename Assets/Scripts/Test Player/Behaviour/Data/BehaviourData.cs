@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public class TestBehaviourData : ScriptableObject {
+public class BehaviourData : ScriptableObject {
     public const string behaviourDataDir = "Project Satya/BehaviourData/";
 }
